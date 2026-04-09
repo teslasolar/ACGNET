@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>White Papers - AI Craftspeople Guild</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Work+Sans:wght@300;400;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-parchment: #F5F1E8;
+            --color-ink: #1A1614;
+            --color-rust: #C84B31;
+            --color-bronze: #A67C52;
+            --color-graphite: #2D3436;
+            --color-highlight: #FFF4E0;
+            --color-shadow: rgba(26, 22, 20, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Work Sans', sans-serif;
+            background: var(--color-parchment);
+            color: var(--color-ink);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(26,22,20,0.02) 2px, rgba(26,22,20,0.02) 4px),
+                              repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(26,22,20,0.02) 2px, rgba(26,22,20,0.02) 4px);
+            background-size: 40px 40px;
+            opacity: 0;
+            animation: fadeInPattern 2s ease-out forwards;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes fadeInPattern { to { opacity: 1; } }
+
+        header {
+            position: relative;
+            padding: 4rem 2rem 3rem;
+            background: linear-gradient(135deg, var(--color-graphite) 0%, var(--color-ink) 100%);
+            overflow: hidden;
+            animation: slideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to   { transform: translateY(0); opacity: 1; }
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, var(--color-rust) 0%, var(--color-bronze) 50%, var(--color-rust) 100%);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer { 0%, 100% { opacity: 0.7; } 50% { opacity: 1; } }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .top-nav {
+            display: flex;
+            justify-content: center;
+            gap: 0.9rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .top-nav a {
+            color: var(--color-parchment);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 0.6rem 0.9rem;
+            border: 1px solid rgba(166, 124, 82, 0.3);
+            background: rgba(166, 124, 82, 0.08);
+            transition: transform 0.3s ease, background 0.3s ease, color 0.3s ease;
+        }
+
+        .top-nav a:hover {
+            color: var(--color-highlight);
+            background: rgba(166, 124, 82, 0.18);
+            transform: translateY(-2px);
+        }
+
+        .top-nav a.active {
+            background: rgba(200, 75, 49, 0.25);
+            border-color: var(--color-rust);
+        }
+
+        .guild-mark {
+            text-align: center;
+            margin-bottom: 1rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .guild-mark .emblem {
+            font-family: 'Courier Prime', monospace;
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--color-bronze);
+            text-shadow: 0 2px 20px rgba(166, 124, 82, 0.3);
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 7vw, 5rem);
+            font-weight: 900;
+            color: var(--color-parchment);
+            text-align: center;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.5s forwards;
+        }
+
+        .subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+            font-weight: 300;
+            color: var(--color-bronze);
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            letter-spacing: 0.04em;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 1rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.85s forwards;
+        }
+
+        .back-link a {
+            color: var(--color-bronze);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .back-link a:hover { color: var(--color-rust); }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Category Header */
+        .category-header {
+            margin: 4rem 0 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid var(--color-rust);
+        }
+
+        .category-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--color-rust);
+        }
+
+        .category-header p {
+            font-size: 0.95rem;
+            color: var(--color-graphite);
+            margin-top: 0.25rem;
+        }
+
+        /* Paper Cards */
+        .papers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .paper-card {
+            background: white;
+            padding: 2rem;
+            box-shadow: 0 2px 8px var(--color-shadow);
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            border: 2px solid transparent;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .paper-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 5px;
+            background: linear-gradient(90deg, var(--color-rust), var(--color-bronze));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .paper-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 24px var(--color-shadow);
+            border-color: var(--color-rust);
+        }
+
+        .paper-card:hover::before { transform: scaleX(1); }
+
+        .paper-card .paper-type {
+            font-size: 0.7rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--color-bronze);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .paper-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--color-ink);
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .paper-card p {
+            font-size: 0.92rem;
+            line-height: 1.6;
+            color: var(--color-graphite);
+        }
+
+        .paper-card .read-link {
+            display: inline-block;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--color-rust);
+            letter-spacing: 0.04em;
+        }
+
+        .paper-card.featured {
+            border-left: 4px solid var(--color-rust);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--color-ink);
+            color: var(--color-bronze);
+            padding: 3rem 2rem 2rem;
+            text-align: center;
+            margin-top: 6rem;
+        }
+
+        footer p { font-size: 0.95rem; margin-bottom: 0.5rem; opacity: 0.8; }
+
+        footer a {
+            color: var(--color-rust);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        footer a:hover { color: var(--color-bronze); }
+
+        .github-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background: rgba(166, 124, 82, 0.1);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .github-link:hover {
+            background: rgba(166, 124, 82, 0.2);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 3rem 1.5rem 2rem; }
+            .top-nav { gap: 0.5rem; }
+            .top-nav a { width: calc(50% - 0.5rem); text-align: center; font-size: 0.78rem; padding: 0.6rem 0.5rem; }
+            .papers-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="top-nav">
+            <a href="https://aicraftspeopleguild.github.io/index.html">Home</a>
+            <a href="https://aicraftspeopleguild.github.io/aicraftspeopleguild-manifesto.html">Manifesto</a>
+            <a href="white-papers.html" class="active">White Papers</a>
+            <a href="https://aicraftspeopleguild.github.io/ai-rituals.html">AI Rituals</a>
+            <a href="https://aicraftspeopleguild.github.io/flywheel.html">Flywheel</a>
+            <a href="https://aicraftspeopleguild.github.io/showcases.html">Showcases</a>
+            <a href="https://aicraftspeopleguild.github.io/members.html">Members</a>
+            <a href="https://aicraftspeopleguild.github.io/hall-of-fame.html">Hall of Fame</a>
+            <a href="https://aicraftspeopleguild.github.io/hall-of-shame.html">Hall of Shame</a>
+            <a href="https://aicraftspeopleguild.github.io/charter.html">Charter</a>
+            <a href="https://aicraftspeopleguild.github.io/code-of-conduct.html">Conduct</a>
+        </nav>
+
+        <div class="guild-mark"><div class="emblem">&#9874; ACG &#9874;</div></div>
+        <h1>White Papers</h1>
+        <p class="subtitle">Technical publications on AI-assisted software engineering, institutional safeguards, risk, and Guild infrastructure.</p>
+        <div class="back-link"><a href="index.html">&larr; Back to ACG-NET</a></div>
+    </header>
+
+    <div class="container">
+
+        <!-- ACG-NET Infrastructure Papers (hosted here) -->
+        <div class="category-header">
+            <h2>ACG-NET Infrastructure</h2>
+            <p>Papers defining the Guild's technical infrastructure layer. Hosted on this site.</p>
+        </div>
+
+        <div class="papers-grid">
+            <a href="decentralized-guild-web.html" class="paper-card featured">
+                <div class="paper-type">White Paper &middot; March 2026</div>
+                <h3>ACG-NET: Decentralized Guild Web</h3>
+                <p>Federated GitHub Pages, P2P member sites, ACG-DISCOVER-v1 protocol, OnlyBrains gamification with brain tiers and achievements.</p>
+                <span class="read-link">Read White Paper &rarr;</span>
+            </a>
+
+            <a href="guild-chain.html" class="paper-card featured">
+                <div class="paper-type">White Paper &middot; March 2026</div>
+                <h3>ACG-KCC: Guild Chain</h3>
+                <p>Permissioned KCC fork. Dual-layer PoA/DPoS. 510,510 GLD. On-chain refusal register, SLA enforcement, retaliation detection.</p>
+                <span class="read-link">Read White Paper &rarr;</span>
+            </a>
+        </div>
+
+        <!-- Full Guild Papers (on charter site) -->
+        <div class="category-header">
+            <h2>Guild White Papers</h2>
+            <p>Core publications on AI-assisted software engineering and risk. Hosted on the Guild charter site.</p>
+        </div>
+
+        <div class="papers-grid">
+            <a href="https://aicraftspeopleguild.github.io/ai-harness.html" class="paper-card">
+                <div class="paper-type">White Paper</div>
+                <h3>AI Harness</h3>
+                <p>The foundational paper on harnessing AI for professional software engineering with proper quality controls.</p>
+                <span class="read-link">Read White Paper &rarr;</span>
+            </a>
+
+            <a href="https://aicraftspeopleguild.github.io/the-harm-equation.html" class="paper-card">
+                <div class="paper-type">White Paper</div>
+                <h3>The Harm Equation</h3>
+                <p>How commercial incentive drives the removal of humans from the loop, and why that equation must be broken.</p>
+                <span class="read-link">Read White Paper &rarr;</span>
+            </a>
+
+            <a href="https://aicraftspeopleguild.github.io/the-prediction-trap.html" class="paper-card">
+                <div class="paper-type">White Paper</div>
+                <h3>The Prediction Trap</h3>
+                <p>The dangers of treating probabilistic AI outputs as deterministic truth in software engineering decisions.</p>
+                <span class="read-link">Read White Paper &rarr;</span>
+            </a>
+
+            <a href="https://aicraftspeopleguild.github.io/shield-of-all-knights.html" class="paper-card">
+                <div class="paper-type">White Paper</div>
+                <h3>Shield of All Knights</h3>
+                <p>Collective professional defense against institutional pressure to cut corners on AI safety.</p>
+                <span class="read-link">Read White Paper &rarr;</span>
+            </a>
+
+            <a href="https://aicraftspeopleguild.github.io/youre-absolutely-wrong.html" class="paper-card">
+                <div class="paper-type">White Paper</div>
+                <h3>You're Absolutely Wrong</h3>
+                <p>On the confident wrongness of AI systems and the professional obligation to verify before shipping.</p>
+                <span class="read-link">Read White Paper &rarr;</span>
+            </a>
+
+            <a href="https://aicraftspeopleguild.github.io/the-dog-the-data-scientist-and-the-mrna-vaccine.html" class="paper-card">
+                <div class="paper-type">White Paper</div>
+                <h3>The Dog, the Data Scientist, and the mRNA Vaccine</h3>
+                <p>A parable about correlation, causation, and the cost of trusting data without understanding context.</p>
+                <span class="read-link">Read White Paper &rarr;</span>
+            </a>
+
+            <a href="https://aicraftspeopleguild.github.io/konomi-standard.html" class="paper-card">
+                <div class="paper-type">White Paper</div>
+                <h3>Konomi Standard</h3>
+                <p>The Konomi Cube Coin standard that forms the parent architecture for ACG-KCC.</p>
+                <span class="read-link">Read White Paper &rarr;</span>
+            </a>
+        </div>
+
+        <!-- Knowledge & Position Papers -->
+        <div class="category-header">
+            <h2>Knowledge, Position &amp; Experimental Papers</h2>
+            <p>Research notes, position papers, and experimental publications from Guild members.</p>
+        </div>
+
+        <div class="papers-grid">
+            <a href="https://aicraftspeopleguild.github.io/question-reflection-action.html" class="paper-card">
+                <div class="paper-type">White Paper</div>
+                <h3>Question Reflection Action</h3>
+                <p>A framework for deliberate practice in AI-assisted development through structured reflection loops.</p>
+                <span class="read-link">Read White Paper &rarr;</span>
+            </a>
+
+            <a href="https://aicraftspeopleguild.github.io/from-correctness-to-integrity.html" class="paper-card">
+                <div class="paper-type">Knowledge Paper</div>
+                <h3>From Correctness to Integrity</h3>
+                <p>Moving beyond "does it compile" to "is it right" in AI-assisted software development.</p>
+                <span class="read-link">Read Knowledge Paper &rarr;</span>
+            </a>
+
+            <a href="https://aicraftspeopleguild.github.io/fractally-wrong.html" class="paper-card">
+                <div class="paper-type">Position Paper</div>
+                <h3>Fractally Wrong</h3>
+                <p>When AI errors compound at every level of abstraction, from code to architecture to business logic.</p>
+                <span class="read-link">Read Position Paper &rarr;</span>
+            </a>
+
+            <a href="https://aicraftspeopleguild.github.io/lightning-factory.html" class="paper-card">
+                <div class="paper-type">Experimental Paper</div>
+                <h3>Lightning Factory</h3>
+                <p>An experimental approach to rapid prototyping with AI under professional quality constraints.</p>
+                <span class="read-link">Read Experimental Paper &rarr;</span>
+            </a>
+
+            <a href="https://aicraftspeopleguild.github.io/irrational-universe.html" class="paper-card">
+                <div class="paper-type">Experimental Paper</div>
+                <h3>Irrational Universe</h3>
+                <p>Exploring the edges where rational engineering meets irrational real-world conditions.</p>
+                <span class="read-link">Read Experimental Paper &rarr;</span>
+            </a>
+
+            <a href="https://aicraftspeopleguild.github.io/the-rational-empire.html" class="paper-card">
+                <div class="paper-type">Experimental Paper</div>
+                <h3>The Rational Empire</h3>
+                <p>The promise and peril of building systematic rational systems on probabilistic foundations.</p>
+                <span class="read-link">Read Experimental Paper &rarr;</span>
+            </a>
+
+            <a href="https://aicraftspeopleguild.github.io/grid-brain.html" class="paper-card">
+                <div class="paper-type">Research Note</div>
+                <h3>Grid Brain</h3>
+                <p>A spatial model for organizing AI-assisted cognitive workflows in software engineering.</p>
+                <span class="read-link">Read Research Note &rarr;</span>
+            </a>
+
+            <a href="https://aicraftspeopleguild.github.io/acg-peer-reviews.html" class="paper-card">
+                <div class="paper-type">Knowledge Paper</div>
+                <h3>ACG Peer Reviews</h3>
+                <p>The Guild's peer review process for publications, code, and certification evidence.</p>
+                <span class="read-link">Read Knowledge Paper &rarr;</span>
+            </a>
+
+            <a href="https://aicraftspeopleguild.github.io/occams-razor.html" class="paper-card">
+                <div class="paper-type">Knowledge Paper</div>
+                <h3>Occam's Razor</h3>
+                <p>Applying the principle of parsimony to AI-assisted engineering decisions.</p>
+                <span class="read-link">Read Knowledge Paper &rarr;</span>
+            </a>
+
+            <a href="https://aicraftspeopleguild.github.io/the-pattern-that-wasnt-there.html" class="paper-card">
+                <div class="paper-type">Position Paper</div>
+                <h3>The Pattern That Wasn't There</h3>
+                <p>On pareidolia in data, phantom correlations, and the professional duty to distinguish signal from noise.</p>
+                <span class="read-link">Read Position Paper &rarr;</span>
+            </a>
+
+            <a href="https://aicraftspeopleguild.github.io/sad.html" class="paper-card">
+                <div class="paper-type">Position Paper</div>
+                <h3>SAD</h3>
+                <p>Software Anxiety Disorder and the psychological impact of AI on professional developers.</p>
+                <span class="read-link">Read Position Paper &rarr;</span>
+            </a>
+        </div>
+    </div>
+
+    <footer>
+        <h3 style="font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--color-parchment);margin-bottom:1rem;">AI Craftspeople Guild (ACG)</h3>
+        <p>Advocating for professional standards in AI-assisted software development</p>
+        <a href="https://github.com/aicraftspeopleguild" class="github-link">&#9889; github.com/aicraftspeopleguild</a>
+        <p style="margin-top:2rem;border-top:1px solid rgba(166,124,82,0.2);padding-top:2rem;">&copy; 2026 AI Craftspeople Guild. Committed to quality, integrity, and human-centered AI.</p>
+    </footer>
+</body>
+</html>

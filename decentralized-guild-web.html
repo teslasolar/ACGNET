@@ -53,6 +53,36 @@
                 <p><strong>Extra layer:</strong> onlybrains-style gamification with achievements, rankings, brain tiers, and visible progression through the Guild.</p>
             </section>
 
+            <section class="section">
+                <h2>2. Origin (Discord, March 2026)</h2>
+                <p>The architecture originated in Guild discussion around how to scale visibility and participation without centralizing member output into a single owned platform.</p>
+<pre>thomas_the_tank_engineer:
+  - "i like my site onlybrains.io maybe can think of a similar way
+     to gamify and rank guild members with like achievements"
+  - "galaxy brain lol"
+  - "each member should have a like ACG fork of some template repo,
+     then registered members get their github page tied back into
+     the main one"
+  - "So the guild site becomes a hub for accessing decentralized
+     member content versus centralizing processing within the guild"
+
+v:
+  - "the guild has already been through an evolution and is now
+     coherent and in agreement about many important things"
+  - "Raising awareness of the Guild is the first step"
+  - "lol onlybrains"
+
+core_insight: |
+  Thomas nailed the architecture: the guild site is a ROUTER,
+  not a SERVER. Each member owns their node. The hub discovers
+  nodes and builds a live map. This is how you scale a guild
+  without centralizing it.
+
+  And the gamification makes it FUN. OnlyBrains energy.
+  Galaxy brain achievements. Visible progression. The kind of
+  thing that makes people WANT to participate, not just sign up.</pre>
+            </section>
+
             <section class="section" id="architecture">
                 <h2>3. Architecture: How GitHub Pages Talk to Each Other</h2>
                 <h3>The Problem</h3>
@@ -227,6 +257,79 @@ Member Actions:
     total_posts: network.members.reduce((s,m) =&gt; s + m.stats.publications, 0)
   });
 }</pre>
+            </section>
+
+            <section class="section">
+                <h2>8. ACG-KCC Chain Integration (Future)</h2>
+                <p>The federation works without the Guild chain. That is deliberate. The chain is an optional verification layer that can later replace self-reported claims with trust-minimized checks for membership, seals, vettings, and achievement unlocks.</p>
+<pre>verification_flow:
+  vetting:
+    current:    "Member claims 'vettings_passed: 1' in manifest"
+    with_chain: "Hub verifies against VettingSession contract on ACG-KCC L1"
+
+  achievements:
+    current:    "Member claims achievements in achievements.json"
+    with_chain: "Achievement unlock events emitted by chain, hub verifies"
+
+  membership:
+    current:    "PR approval by existing member"
+    with_chain: "Member registration on MembershipContract, hub reads chain"
+
+  seal_display:
+    current:    "Visual badge on member page"
+    with_chain: "On-chain seal with verify link to chain explorer"
+
+  note: |
+    The GitHub Pages federation works WITHOUT the chain. The chain
+    adds verification but is not required. This is deliberate:
+    the federation should work even if the chain hasn't launched yet.
+    Chain = nice to have. Git federation = the foundation.</pre>
+            </section>
+
+            <section class="section">
+                <h2>9. Template Customization Guide</h2>
+                <p>The protocol constrains the schema, not the person. Members share a machine-readable manifest contract so the hub can index them, but the visible identity of each node remains member-owned.</p>
+<pre>what_members_customize:
+  must_edit:
+    - "manifest.json (handle, tagline, joined date)"
+    - "assets/avatar.png (their photo or icon)"
+
+  should_edit:
+    - "content/ (add their posts, projects)"
+    - "README.md (personal intro)"
+
+  can_edit:
+    - "assets/style.css (custom colors, fonts, layout)"
+    - "index.html (layout modifications)"
+    - "achievements.html (display preferences)"
+
+  must_not_edit:
+    - "ACG protocol version in manifest.json"
+    - "Schema structure of manifest.json"
+    - ".github/workflows/ (breaks auto-updates)"
+    - "Protocol-level JavaScript (hub communication)"
+
+customization_philosophy: |
+  The template gives you guild identity. Your edits give you
+  personal identity. The constraint is the schema (so the hub
+  can read your manifest). Everything else is yours.
+
+  Thomas's page should look like Thomas's page.
+  Alex's page should look like Alex's page.
+  The guild aesthetic is a shared thread, not a uniform.</pre>
+            </section>
+
+            <section class="section">
+                <h2>10. Build Commands</h2>
+<pre># === MEMBER JOINS ===
+# 1. Member clicks "Use this template" on acg-member-template
+# 2. Edits manifest.json with their info
+# 3. Enables GitHub Pages (Settings -&gt; Pages -&gt; main branch)
+# 4. Submits PR to hub repo adding their URL to registry.json
+# 5. Existing member approves PR
+# 6. Hub discovers them on next hourly crawl
+# 7. They appear on the leaderboard within the hour
+# 8. They're in. No server. No account. No permission. Just git.</pre>
             </section>
 
             <section class="section" id="network">
