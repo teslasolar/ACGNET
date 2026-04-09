@@ -13,7 +13,7 @@
 
     <!-- Profile Header -->
     <div class="profile-header">
-      <div class="guild-badge">&hamilt; ACG MEMBER &hamilt;</div>
+      <div class="guild-badge">&#9874; ACG MEMBER &#9874;</div>
       <img class="avatar" id="avatar" src="assets/avatar.png" alt="avatar">
       <h1 id="member-handle">Loading...</h1>
       <div class="tagline" id="member-tagline"></div>
@@ -55,7 +55,7 @@
         <div class="nw-stat"><span class="nw-label">Total Members</span><span class="nw-value" id="nw-members">-</span></div>
         <div class="nw-stat"><span class="nw-label">Total Posts</span><span class="nw-value" id="nw-posts">-</span></div>
         <div class="nw-stat"><span class="nw-label">Achievements Unlocked</span><span class="nw-value" id="nw-achievements">-</span></div>
-        <p style="margin-top:12px;font-size:11px;color:var(--text-dim)">
+        <p style="margin-top:12px;font-size:11px;color:var(--color-graphite)">
           <a href="https://aicraftspeopleguild.github.io">View full leaderboard on ACG-NET hub &rarr;</a>
         </p>
       </div>
@@ -65,7 +65,7 @@
       <div class="manifesto-line" id="manifesto-line">
         "The guild site is a hub, not a host. Your page is yours. The network is ours."
       </div>
-      <div>&hamilt; AI Craftspeople Guild &mdash; <a href="https://aicraftspeopleguild.github.io">ACG-NET</a></div>
+      <div>&#9874; AI Craftspeople Guild &mdash; <a href="https://aicraftspeopleguild.github.io">ACG-NET</a></div>
     </footer>
   </div>
 
@@ -136,7 +136,7 @@
         var score = computeScore(stats);
         var tier = getTier(score);
         document.getElementById('tier-badge').textContent = tier.emoji + ' ' + tier.name;
-        document.getElementById('tier-badge').style.borderColor = tier.color || 'var(--accent-dim)';
+        document.getElementById('tier-badge').style.borderColor = tier.color || 'rgba(166, 124, 82, 0.35)';
 
         // Stats
         setText('stat-tier', tier.emoji);
@@ -163,7 +163,7 @@
         var feed = document.getElementById('content-feed');
         var posts = manifest.content && manifest.content.posts ? manifest.content.posts : [];
         if (posts.length === 0) {
-          feed.innerHTML = '<p style="color:var(--text-dim);font-size:12px">No posts yet. Add markdown files to <code>content/posts/</code>.</p>';
+          feed.innerHTML = '<p style="color:var(--color-graphite);font-size:12px">No posts yet. Add markdown files to <code>content/posts/</code>.</p>';
         } else {
           var fhtml = '';
           posts.forEach(function(p) {
