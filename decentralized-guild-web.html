@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACG-NET: Decentralized Guild Web - AI Craftspeople Guild</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Work+Sans:wght@300;400;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root{--color-parchment:#F5F1E8;--color-ink:#1A1614;--color-rust:#C84B31;--color-bronze:#A67C52;--color-graphite:#2D3436;--color-highlight:#FFF4E0;--color-shadow:rgba(26,22,20,0.08)}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Work Sans',sans-serif;background:var(--color-parchment);color:var(--color-ink);line-height:1.6;overflow-x:hidden}body::before{content:'';position:fixed;inset:0;background-image:repeating-linear-gradient(90deg,transparent,transparent 2px,rgba(26,22,20,0.02) 2px,rgba(26,22,20,0.02) 4px),repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(26,22,20,0.02) 2px,rgba(26,22,20,0.02) 4px);background-size:40px 40px;opacity:0;animation:fadeInPattern 2s ease-out forwards;pointer-events:none;z-index:0}@keyframes fadeInPattern{to{opacity:1}}header{position:relative;padding:4rem 2rem 3rem;background:linear-gradient(135deg,var(--color-graphite) 0%,var(--color-ink) 100%);overflow:hidden;animation:slideDown .8s cubic-bezier(.16,1,.3,1)}@keyframes slideDown{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}header::after{content:'';position:absolute;bottom:-2px;left:0;width:100%;height:8px;background:linear-gradient(90deg,var(--color-rust) 0%,var(--color-bronze) 50%,var(--color-rust) 100%);animation:shimmer 3s ease-in-out infinite}@keyframes shimmer{0%,100%{opacity:.7}50%{opacity:1}}.guild-mark{text-align:center;margin-bottom:1rem;opacity:0;animation:fadeInUp 1s ease-out .3s forwards}@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.guild-mark .emblem{font-family:'Courier Prime',monospace;font-size:3rem;font-weight:bold;color:var(--color-bronze);text-shadow:0 2px 20px rgba(166,124,82,0.3)}.eyebrow{text-align:center;font-size:.9rem;letter-spacing:.18em;text-transform:uppercase;color:var(--color-bronze);margin-bottom:.85rem;opacity:0;animation:fadeInUp 1s ease-out .45s forwards}h1{font-family:'Playfair Display',serif;font-size:clamp(2.7rem,6.8vw,5rem);font-weight:900;color:var(--color-parchment);text-align:center;letter-spacing:-.03em;line-height:1.05;margin-bottom:1rem;opacity:0;animation:fadeInUp 1s ease-out .55s forwards}.subtitle{font-size:clamp(1.05rem,2.3vw,1.35rem);font-weight:300;color:var(--color-bronze);text-align:center;max-width:920px;margin:0 auto 1.75rem;letter-spacing:.03em;opacity:0;animation:fadeInUp 1s ease-out .7s forwards}.article-meta{display:flex;justify-content:center;gap:.9rem;flex-wrap:wrap;color:var(--color-parchment);opacity:0;animation:fadeInUp 1s ease-out .8s forwards}.article-meta span{padding:.35rem .85rem;border:1px solid rgba(166,124,82,0.35);background:rgba(166,124,82,0.08)}.back-link{text-align:center;margin-top:1.2rem;opacity:0;animation:fadeInUp 1s ease-out .95s forwards}.back-link a{color:var(--color-bronze);text-decoration:none;font-weight:600;transition:color .3s ease}.back-link a:hover{color:var(--color-rust)}.container{max-width:1060px;margin:0 auto;padding:0 2rem;position:relative;z-index:1}.article-shell{margin:5rem auto;background:white;padding:4rem 3rem;box-shadow:0 4px 6px var(--color-shadow),0 10px 20px var(--color-shadow);opacity:0;animation:fadeInScale 1s ease-out 1s forwards}@keyframes fadeInScale{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}.article-nav{display:flex;gap:.9rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem}.article-nav a{text-decoration:none;color:var(--color-rust);font-weight:600;letter-spacing:.03em;padding:.8rem 1.1rem;border:1px solid rgba(166,124,82,0.35);background:var(--color-highlight);transition:transform .3s ease,box-shadow .3s ease,color .3s ease}.article-nav a:hover{color:var(--color-ink);transform:translateY(-2px);box-shadow:0 8px 18px var(--color-shadow)}.lead,.callout,.closing-statement{padding:2rem;margin-bottom:3rem}.lead{background:linear-gradient(180deg,var(--color-highlight) 0%,white 100%);border-left:4px solid var(--color-rust)}.lead p{font-size:1.16rem;line-height:1.85;color:var(--color-graphite)}.lead p+p{margin-top:1rem}.section{margin-bottom:4rem}.section:last-of-type{margin-bottom:0}.section h2{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3rem);font-weight:700;color:var(--color-rust);margin-bottom:1.5rem}.section h2::after{content:'';display:block;width:110px;height:4px;background:var(--color-bronze);margin-top:.8rem}.section h3{font-family:'Playfair Display',serif;font-size:1.45rem;color:var(--color-ink);margin:1.8rem 0 .8rem}.section p,.section li{font-size:1.06rem;line-height:1.82;color:var(--color-graphite)}.section p+p{margin-top:1rem}.section ul{margin:1rem 0 0 1.5rem}.section li+li{margin-top:.65rem}strong{color:var(--color-rust)}pre{margin:1.5rem 0;padding:1.25rem 1.4rem;background:var(--color-ink);color:var(--color-parchment);overflow-x:auto;font-family:'Courier Prime',monospace;font-size:.95rem;line-height:1.6;box-shadow:inset 0 0 0 1px rgba(166,124,82,0.2);white-space:pre}code{font-family:'Courier Prime',monospace}.closing-statement{background:linear-gradient(135deg,var(--color-graphite) 0%,var(--color-ink) 100%);position:relative;overflow:hidden}.closing-statement::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at top right,rgba(166,124,82,0.22),transparent 55%)}.closing-statement p{position:relative;color:var(--color-parchment);font-size:1.14rem;line-height:1.9}.closing-statement p+p{margin-top:1rem}.paper-mark{margin-top:2.2rem;text-align:center;color:var(--color-bronze);letter-spacing:.06em}.cta-section{margin:4rem auto;padding:3rem;background:linear-gradient(135deg,var(--color-graphite) 0%,var(--color-ink) 100%);text-align:center;position:relative;overflow:hidden}.cta-section::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(166,124,82,0.1) 0%,transparent 70%);animation:rotate 20s linear infinite}@keyframes rotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}.cta-section h2{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3rem);font-weight:700;color:var(--color-parchment);margin-bottom:1.5rem;position:relative;z-index:1}.cta-section p{font-size:1.18rem;color:var(--color-bronze);margin-bottom:2rem;position:relative;z-index:1}.cta-buttons{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;position:relative;z-index:1}.btn{font-family:'Work Sans',sans-serif;font-size:1rem;font-weight:600;padding:1rem 2.5rem;border:none;cursor:pointer;text-decoration:none;display:inline-block;transition:all .3s cubic-bezier(.16,1,.3,1);letter-spacing:.05em}.btn-primary{background:var(--color-rust);color:white}.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(200,75,49,0.4)}.btn-secondary{background:transparent;color:var(--color-parchment);border:2px solid var(--color-bronze)}.btn-secondary:hover{background:var(--color-bronze);transform:translateY(-2px);box-shadow:0 8px 20px rgba(166,124,82,0.4)}footer{background:var(--color-ink);color:var(--color-bronze);padding:3rem 2rem 2rem;text-align:center;margin-top:6rem}footer p{font-size:.95rem;margin-bottom:.5rem;opacity:.8}footer a{color:var(--color-rust);text-decoration:none;transition:color .3s ease;font-weight:600}footer a:hover{color:var(--color-bronze)}.github-link{display:inline-flex;align-items:center;gap:.5rem;margin-top:1rem;padding:.5rem 1rem;background:rgba(166,124,82,0.1);border-radius:4px;transition:all .3s ease}.github-link:hover{background:rgba(166,124,82,0.2);transform:translateY(-2px)}@media(max-width:768px){header{padding:3rem 1.5rem 2rem}.article-shell,.cta-section{padding:2rem 1.5rem}.lead,.callout,.closing-statement{padding:1.5rem}.cta-buttons{flex-direction:column;align-items:center}.btn{width:100%;max-width:320px}}
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="guild-mark"><div class="emblem">&#9874; ACG &#9874;</div></div>
+            <p class="eyebrow">White paper</p>
+            <h1>ACG-NET: Decentralized Guild Web</h1>
+            <p class="subtitle">Bloom Prompt &middot; Federated GitHub Pages &middot; P2P Member Sites</p>
+            <div class="article-meta">
+                <span>ACG-NET</span>
+                <span>March 2026</span>
+                <span>Federated GitHub Pages</span>
+                <span>P2P Member Sites</span>
+                <span>Bloom Prompt</span>
+            </div>
+            <div class="back-link"><a href="white-papers.html">&larr; Back to White Papers</a></div>
+        </div>
+    </header>
+
+    <div class="container">
+        <article class="article-shell">
+            <nav class="article-nav">
+                <a href="#builds">What This Builds</a>
+                <a href="#architecture">Architecture</a>
+                <a href="#template">Template Repo</a>
+                <a href="#gamification">Gamification</a>
+                <a href="#automation">Automation</a>
+                <a href="#network">Network Effect</a>
+            </nav>
+
+            <div class="lead">
+                <p><strong>&ldquo;The guild site is a hub, not a host. Your page is yours. The network is ours.&rdquo;</strong></p>
+                <p>This paper proposes a federated network of GitHub Pages sites where each Guild member owns their own public node, while the main Guild site acts as the discovery hub and index. The hub does not host member content. It discovers it, ranks it, and routes traffic back to member-owned repos.</p>
+            </div>
+
+            <section class="section" id="builds">
+                <h2>1. What This Builds</h2>
+                <p>ACG-NET defines a decentralized Guild web built from static hosting, Git repos, JSON manifests, and GitHub Actions. Each member forks a template repo, customizes a personal site, and registers that site with the main Guild hub. The hub aggregates manifests into a live network index, leaderboards, and content feeds without taking ownership of the underlying pages.</p>
+                <p>The central design decision is architectural rather than cosmetic: the Guild site is a <strong>router</strong>, not a <strong>server</strong>. Member content stays in member repos. The Guild hub acts as a portal into a constellation of nodes.</p>
+                <p><strong>Deploy as:</strong> GitHub Pages for the hub and GitHub Pages for each member node.</p>
+                <p><strong>Backend:</strong> zero. Git is the backend. JSON files are the database.</p>
+                <p><strong>Discovery:</strong> cross-repo fetch via GitHub Pages CORS and <code>raw.githubusercontent</code>.</p>
+                <p><strong>Extra layer:</strong> onlybrains-style gamification with achievements, rankings, brain tiers, and visible progression through the Guild.</p>
+            </section>
+
+            <section class="section" id="architecture">
+                <h2>3. Architecture: How GitHub Pages Talk to Each Other</h2>
+                <h3>The Problem</h3>
+                <p>GitHub Pages are static sites. They do not run application servers, store conventional databases, or offer direct inter-site mutation. So the problem is how to define a protocol that lets static nodes discover one another and share enough state to behave like a network.</p>
+                <h3>The Solution</h3>
+<pre>You don't need a server. You need a PROTOCOL.
+
+Git repos ARE databases (JSON files committed to repos).
+GitHub Pages ARE APIs (fetch any file via HTTPS).
+GitHub Actions ARE cron jobs (scheduled builds).
+Pull Requests ARE registration (member submits PR to hub).
+
+The "P2P" layer is:
+1. Each member site publishes a manifest.json at a known URL
+2. The hub site fetches all registered manifests at build time
+3. The hub builds an aggregate index from all manifests
+4. Member sites fetch the hub index for network-wide data
+5. GitHub Actions rebuilds the hub on a schedule (hourly/daily)
+
+No server. No database. No API keys. Just HTTPS GETs
+between static files that are rebuilt by git automation.</pre>
+
+                <h3>Data Flow Diagram</h3>
+<pre>MEMBER A's REPO                    HUB REPO                     MEMBER B's REPO
+(GitHub Pages)                     (GitHub Pages)               (GitHub Pages)
+
+manifest.json --GET-------------&gt; GitHub Action
+                                   | fetches all
+                                   | manifests                  &lt;--GET-- manifest.json
+                                   v
+                                   network.json
+                                   (aggregated)
+                                   |
+              &lt;----GET-------------|--------GET--------------&gt;
+              network.json         |              network.json
+              (for my rank,        |              (for my rank,
+               leaderboard)        |               leaderboard)
+                                   |
+                                   v
+                                   HUB SITE
+                                   (portal to all members)
+
+NO SERVERS. NO DATABASES. JUST STATIC FILES AND HTTPS GETS.</pre>
+            </section>
+
+            <section class="section" id="template">
+                <h2>4. The Template Repo: acg-member-template</h2>
+<pre>acg-member-template/
+&#9500;&#9472;&#9472; index.html              # Member's public profile page
+&#9500;&#9472;&#9472; manifest.json           # Machine-readable identity + stats
+&#9500;&#9472;&#9472; achievements.html       # Achievement showcase
+&#9500;&#9472;&#9472; content/
+&#9474;   &#9500;&#9472;&#9472; posts/              # Member's blog posts (markdown)
+&#9474;   &#9500;&#9472;&#9472; projects/           # Project showcases
+&#9474;   &#9492;&#9472;&#9472; resources/          # Shared resources, tools, guides
+&#9500;&#9472;&#9472; assets/
+&#9474;   &#9500;&#9472;&#9472; avatar.png          # Member avatar
+&#9474;   &#9492;&#9472;&#9472; style.css           # Customizable theme
+&#9500;&#9472;&#9472; data/
+&#9474;   &#9500;&#9472;&#9472; local-stats.json    # Auto-updated by GitHub Actions
+&#9474;   &#9492;&#9472;&#9472; achievements.json   # Unlocked achievements
+&#9500;&#9472;&#9472; .github/workflows/
+&#9474;   &#9500;&#9472;&#9472; update-manifest.yml # Rebuilds manifest from content
+&#9474;   &#9492;&#9472;&#9472; verify-content.yml  # Validates post format
+&#9500;&#9472;&#9472; CUSTOMIZE.md            # "Edit these files to make it yours"
+&#9492;&#9472;&#9472; README.md               # Setup instructions</pre>
+            </section>
+
+            <section class="section" id="gamification">
+                <h2>5. Gamification: OnlyBrains Energy</h2>
+                <p>The paper does not treat gamification as decorative fluff. It treats it as participation infrastructure.</p>
+                <h3>Brain Tiers</h3>
+<pre>tiers:
+  tier_0: "Smooth Brain"       &#x1F9E0;     #888888  0 points
+  tier_1: "Wrinkled Brain"     &#x1F9E0;&#x2728;   #5b9bd5  100 points
+  tier_2: "Big Brain"          &#x1F9E0;&#x1F525;   #4ae08a  500 points
+  tier_3: "Galaxy Brain"       &#x1F9E0;&#x1F30C;   #d4883a  1,500 points
+  tier_4: "Cosmic Brain"       &#x1F9E0;&#x1FA90;   #aa44ff  5,000 points
+  tier_5: "Transcendent Brain" &#x1F9E0;&#x26A1;   #ffd700  10,000 points
+
+point_system:
+  attend_session: 10       pass_eliza_vetting: 100
+  publish_post: 50         publish_project: 100
+  serve_as_reviewer: 200   serve_as_auditor: 500
+  file_ethical_refusal: 200  process_refusal: 300
+  contribute_to_spec: 300  contribute_to_tool: 400
+  mentor_new_member: 150   recruit_new_member: 50</pre>
+
+                <h3>Achievements</h3>
+<pre>achievements:
+  first_steps:      "First Steps"       &#x1F463;  common     - Forked template, deployed page
+  the_interview:    "The Interview"     &#x1F50D;  common     - Passed ELIZA vetting
+  wordsmith:        "Wordsmith"         &#x270D;&#xFE0F;  common     - Published first post
+  prolific:         "Prolific"          &#x1F4DA;  uncommon   - Published 10 posts
+  toolmaker:        "Toolmaker"         &#x1F527;  rare       - Contributed to guild tool
+  white_paper:      "White Paper"       &#x1F4DC;  rare       - Co-authored white paper
+  i_said_no:        "I Said No"         &#x270B;   rare       - Filed ethical refusal
+  guardian:          "Guardian"          &#x1F6E1;&#xFE0F;  epic       - Independent refusal reviewer
+  shield_wall:      "Shield Wall"       &#x2694;&#xFE0F;  epic       - Supported colleague's refusal
+  founding_hammer:  "Founding Hammer"   &#x2692;&#xFE0F;  legendary  - Signed original manifesto
+  galaxy_brain:     "Galaxy Brain"      &#x1F30C;  legendary  - Reached Galaxy Brain tier
+  equation_breaker: "Equation Breaker"  &#x1F4A5;  legendary  - Broke the Harm Equation
+
+rarity_colors:
+  common: #888888  uncommon: #5b9bd5  rare: #4ae08a
+  epic: #d4883a    legendary: #ffd700</pre>
+            </section>
+
+            <section class="section" id="automation">
+                <h2>6. GitHub Actions: The Automation Layer</h2>
+<pre>Hub Actions:
+  hourly_discovery:
+    trigger: schedule cron '0 * * * *'
+    steps:
+      1. Checkout hub repo
+      2. Read data/registry.json
+      3. Fetch each member's manifest.json
+      4. Validate schema, record online/offline
+      5. Aggregate into data/network.json
+      6. Compute rankings, brain tiers, leaderboard
+      7. Rebuild hub site
+      8. Commit and push if changes detected
+
+  on_pr_merge:
+    trigger: PR merged modifying data/registry.json
+    steps:
+      1. Validate new member's manifest URL
+      2. Validate manifest schema
+      3. Run immediate discovery cycle
+      4. Welcome message in PR comments
+
+Member Actions:
+  on_content_change:
+    trigger: push to main branch
+    steps:
+      1. Scan content/ directory
+      2. Update manifest.json content arrays
+      3. Recalculate local stats
+      4. Commit updated manifest.json
+      5. GitHub Pages redeploys</pre>
+            </section>
+
+            <section class="section">
+                <h2>7. Cross-Site Communication Patterns</h2>
+                <h3>Pattern 1: Hub Reads Members (Discovery)</h3>
+<pre>async function discoverNetwork() {
+  const registry = JSON.parse(fs.readFileSync('data/registry.json'));
+  const network = { members: [], updated: new Date().toISOString() };
+  for (const entry of registry.members) {
+    try {
+      const res = await fetch(entry.manifest_url);
+      if (!res.ok) { markOffline(entry); continue; }
+      const manifest = await res.json();
+      if (!validateSchema(manifest)) { markInvalid(entry); continue; }
+      network.members.push({ ...manifest.member, stats: manifest.stats,
+        achievements: manifest.achievements, content: manifest.content,
+        status: 'online', last_seen: new Date().toISOString() });
+    } catch (e) { markOffline(entry); }
+  }
+  computeRankings(network);
+  fs.writeFileSync('data/network.json', JSON.stringify(network, null, 2));
+}</pre>
+                <h3>Pattern 2: Members Read Hub (Backfeed)</h3>
+<pre>async function loadNetworkData() {
+  const HUB = 'https://aicraftspeopleguild.github.io';
+  const res = await fetch(`${HUB}/data/network.json`);
+  const network = await res.json();
+  const me = network.members.find(m =&gt; m.github === MY_GITHUB);
+  if (me) { renderRank(me.rank); renderBrainTier(me.brain_tier); }
+  renderNetworkStats({
+    total_members: network.members.length,
+    total_posts: network.members.reduce((s,m) =&gt; s + m.stats.publications, 0)
+  });
+}</pre>
+            </section>
+
+            <section class="section" id="network">
+                <h2>11. The Network Effect</h2>
+                <p>Each new member adds one more node, one more manifest, more content, more discoverability, and more visible participation. The value of the hub increases with every member because it indexes more useful material, yet the operating model remains cheap because the hub is only fetching public JSON and rebuilding static pages.</p>
+                <p>That means the network effect is real without requiring platform capture. Member pages become more valuable because the shared index brings readers to them. The hub becomes more valuable because it shows a denser and more active Guild. And any member can still leave with their content intact, because their repo was always theirs.</p>
+            </section>
+
+            <div class="closing-statement">
+                <p><strong>the hub is a router not a server</strong></p>
+                <p><strong>your page is yours the network is ours</strong></p>
+                <p><strong>git is the backend json is the database</strong></p>
+                <p><strong>github actions is the cron</strong></p>
+                <p><strong>PRs are registration</strong></p>
+                <p><strong>no servers no databases no permission</strong></p>
+                <p><strong>just static files talking to static files</strong></p>
+                <p><strong>galaxy brain energy</strong></p>
+                <p class="paper-mark">&#9874; ACG &#9874;</p>
+            </div>
+        </article>
+
+        <div class="cta-section">
+            <h2>ACG-NET</h2>
+            <p>The guild site is a hub, not a host.</p>
+            <div class="cta-buttons">
+                <a href="white-papers.html" class="btn btn-secondary">Back to White Papers</a>
+                <a href="guild-chain.html" class="btn btn-secondary">Read Guild Chain</a>
+                <a href="index.html" class="btn btn-secondary">Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p><strong>AI Craftspeople Guild (ACG)</strong></p>
+            <p>Advocating for professional standards in AI-assisted software development</p>
+            <a href="https://github.com/aicraftspeopleguild" class="github-link">&#9889; github.com/aicraftspeopleguild</a>
+            <p style="margin-top:2rem;opacity:0.6">&copy; 2026 AI Craftspeople Guild. Committed to quality, integrity, and human-centered AI.</p>
+        </div>
+    </footer>
+</body>
+</html>
