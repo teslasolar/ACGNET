@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Achievements — ACG Member</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Crimson+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Work+Sans:wght@300;400;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/style.css">
   <style>
     .ach-full-grid {
@@ -16,40 +16,42 @@
     }
 
     .ach-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 16px;
+      background: white;
+      border: 1px solid rgba(166, 124, 82, 0.15);
+      padding: 1rem;
       display: flex;
-      gap: 14px;
+      gap: 0.9rem;
       align-items: flex-start;
+      transition: border-color 0.3s;
     }
 
-    .ach-card.locked { opacity: 0.3; }
+    .ach-card:hover { border-color: var(--color-rust); }
+    .ach-card.locked { opacity: 0.25; }
 
     .ach-card[data-rarity="legendary"] { border-color: var(--rarity-legendary); }
     .ach-card[data-rarity="epic"]      { border-color: var(--rarity-epic); }
     .ach-card[data-rarity="rare"]      { border-color: var(--rarity-rare); }
     .ach-card[data-rarity="uncommon"]  { border-color: var(--rarity-uncommon); }
 
-    .ach-card .ach-icon-big { font-size: 36px; line-height: 1; }
+    .ach-card .ach-icon-big { font-size: 2.2rem; line-height: 1; }
 
     .ach-card .ach-details .ach-name {
       font-weight: 700;
-      color: #ffffff;
-      font-size: 14px;
+      color: var(--color-ink);
+      font-size: 0.95rem;
     }
 
     .ach-card .ach-details .ach-desc {
-      font-size: 12px;
-      color: var(--text-dim);
-      margin-top: 2px;
+      font-size: 0.85rem;
+      color: var(--color-graphite);
+      margin-top: 0.15rem;
     }
 
     .ach-card .ach-details .ach-rarity {
-      font-size: 10px;
-      letter-spacing: 1px;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      margin-top: 6px;
+      margin-top: 0.4rem;
     }
 
     .ach-rarity.legendary { color: var(--rarity-legendary); }
@@ -60,21 +62,21 @@
 
     .back-link {
       display: inline-block;
-      margin-bottom: 24px;
-      font-size: 13px;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
     }
 
     .ach-summary {
-      color: var(--text-dim);
-      font-size: 12px;
-      margin-top: 8px;
+      color: var(--color-graphite);
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
     }
   </style>
 </head>
 <body>
-  <div class="container" style="padding-top:32px;padding-bottom:48px">
+  <div class="container" style="padding-top:2rem;padding-bottom:3rem">
     <a class="back-link" href="index.html">&larr; Back to profile</a>
-    <h1 style="font-family:var(--serif);color:#fff;font-size:28px">Achievements</h1>
+    <h1 style="font-family:'Playfair Display',serif;color:var(--color-rust);font-size:1.8rem">Achievements</h1>
     <p class="ach-summary" id="ach-summary">Loading...</p>
     <div class="ach-full-grid" id="ach-grid"></div>
   </div>

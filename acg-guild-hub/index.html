@@ -4,82 +4,107 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ACG-NET — AI Craftspeople Guild Network</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Crimson+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Work+Sans:wght@300;400;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg:         #0a0a0a;
-      --surface:    #111111;
-      --border:     #1a1a1a;
-      --text:       #c8c8c8;
-      --text-dim:   #666666;
-      --accent:     #4ae08a;
-      --accent-dim: #2a8a4a;
-      --gold:       #ffd700;
-      --epic:       #d4883a;
-      --rare:       #4ae08a;
-      --uncommon:   #5b9bd5;
-      --common:     #888888;
-      --legendary:  #ffd700;
-      --mono:       'IBM Plex Mono', monospace;
-      --serif:      'Crimson Pro', serif;
+      --color-parchment: #F5F1E8;
+      --color-ink: #1A1614;
+      --color-rust: #C84B31;
+      --color-bronze: #A67C52;
+      --color-graphite: #2D3436;
+      --color-highlight: #FFF4E0;
+      --color-shadow: rgba(26, 22, 20, 0.08);
+      --rarity-common: #888888;
+      --rarity-uncommon: #5b9bd5;
+      --rarity-rare: #4ae08a;
+      --rarity-epic: #d4883a;
+      --rarity-legendary: #ffd700;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--mono);
-      font-size: 14px;
+      font-family: 'Work Sans', sans-serif;
+      background: var(--color-parchment);
+      color: var(--color-ink);
       line-height: 1.6;
-      min-height: 100vh;
     }
 
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    .container {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 0 24px;
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(26,22,20,0.02) 2px, rgba(26,22,20,0.02) 4px),
+                        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(26,22,20,0.02) 2px, rgba(26,22,20,0.02) 4px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
     }
+
+    a { color: var(--color-rust); text-decoration: none; font-weight: 600; }
+    a:hover { color: var(--color-bronze); }
+
+    .container { max-width: 1060px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
 
     /* Header */
     header {
-      border-bottom: 1px solid var(--border);
-      padding: 40px 0 32px;
-      text-align: center;
+      position: relative;
+      padding: 3rem 2rem 2.5rem;
+      background: linear-gradient(135deg, var(--color-graphite) 0%, var(--color-ink) 100%);
     }
 
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 0;
+      width: 100%; height: 8px;
+      background: linear-gradient(90deg, var(--color-rust) 0%, var(--color-bronze) 50%, var(--color-rust) 100%);
+      animation: shimmer 3s ease-in-out infinite;
+    }
+
+    @keyframes shimmer { 0%, 100% { opacity: 0.7; } 50% { opacity: 1; } }
+
     header .guild-mark {
-      font-size: 24px;
-      color: var(--accent);
-      letter-spacing: 4px;
+      text-align: center;
+      font-family: 'Courier Prime', monospace;
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: var(--color-bronze);
+      text-shadow: 0 2px 20px rgba(166, 124, 82, 0.3);
+      margin-bottom: 0.5rem;
     }
 
     header h1 {
-      font-family: var(--serif);
-      font-size: 36px;
-      font-weight: 700;
-      color: #ffffff;
-      margin: 8px 0 4px;
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 900;
+      color: var(--color-parchment);
+      text-align: center;
+      margin-bottom: 0.5rem;
     }
 
     header .tagline {
-      color: var(--text-dim);
-      font-size: 13px;
-      letter-spacing: 1px;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: var(--color-bronze);
+      letter-spacing: 0.08em;
     }
 
     header .protocol-badge {
+      display: block;
+      text-align: center;
+      margin-top: 0.75rem;
+    }
+
+    header .protocol-badge span {
       display: inline-block;
-      margin-top: 12px;
-      padding: 4px 12px;
-      border: 1px solid var(--accent-dim);
-      color: var(--accent);
-      font-size: 11px;
-      letter-spacing: 2px;
+      padding: 0.3rem 0.8rem;
+      border: 1px solid rgba(166, 124, 82, 0.35);
+      background: rgba(166, 124, 82, 0.08);
+      color: var(--color-parchment);
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
     }
 
     /* Stats Bar */
@@ -87,248 +112,235 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
       gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
-      margin: 32px 0;
+      background: rgba(166, 124, 82, 0.2);
+      border: 1px solid rgba(166, 124, 82, 0.2);
+      margin: 2.5rem 0;
     }
 
     .stat-cell {
-      background: var(--surface);
-      padding: 16px;
+      background: white;
+      padding: 1.25rem;
       text-align: center;
     }
 
     .stat-cell .value {
-      font-size: 28px;
+      font-family: 'Courier Prime', monospace;
+      font-size: 1.75rem;
       font-weight: 700;
-      color: #ffffff;
+      color: var(--color-rust);
     }
 
     .stat-cell .label {
-      font-size: 10px;
-      color: var(--text-dim);
-      letter-spacing: 1px;
+      font-size: 0.65rem;
+      color: var(--color-graphite);
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      margin-top: 4px;
+      margin-top: 0.2rem;
     }
 
     /* Section */
     section {
-      margin: 40px 0;
+      margin: 3rem 0;
     }
 
     section h2 {
-      font-family: var(--serif);
-      font-size: 22px;
-      color: #ffffff;
-      margin-bottom: 16px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--border);
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      color: var(--color-rust);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 3px solid var(--color-highlight);
     }
-
-    section h2 .icon { color: var(--accent); margin-right: 8px; }
 
     /* Leaderboard */
     .leaderboard-table {
       width: 100%;
       border-collapse: collapse;
+      background: white;
+      box-shadow: 0 2px 8px var(--color-shadow);
     }
 
     .leaderboard-table th {
       text-align: left;
-      font-size: 10px;
-      color: var(--text-dim);
-      letter-spacing: 1px;
+      font-size: 0.7rem;
+      color: var(--color-parchment);
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      padding: 8px 12px;
-      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1rem;
+      background: var(--color-graphite);
+      font-weight: 600;
     }
 
     .leaderboard-table td {
-      padding: 10px 12px;
-      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid rgba(166, 124, 82, 0.15);
       vertical-align: middle;
     }
 
-    .leaderboard-table tr:hover {
-      background: var(--surface);
-    }
+    .leaderboard-table tbody tr:hover { background: var(--color-highlight); }
+    .leaderboard-table tbody tr:nth-child(even) { background: rgba(245, 241, 232, 0.5); }
+    .leaderboard-table tbody tr:nth-child(even):hover { background: var(--color-highlight); }
 
-    .rank-cell {
-      font-weight: 700;
-      color: var(--text-dim);
-      width: 48px;
-    }
-
-    .rank-cell.top-1 { color: var(--gold); }
+    .rank-cell { font-weight: 700; color: var(--color-graphite); width: 48px; }
+    .rank-cell.top-1 { color: var(--rarity-legendary); }
     .rank-cell.top-2 { color: #c0c0c0; }
     .rank-cell.top-3 { color: #cd7f32; }
 
-    .tier-emoji { font-size: 18px; width: 40px; text-align: center; }
-
-    .handle-cell a { font-weight: 600; }
-
-    .score-cell { font-weight: 600; color: var(--accent); text-align: right; }
-
-    .achievement-count { color: var(--text-dim); text-align: right; }
+    .tier-emoji { font-size: 1.2rem; width: 40px; text-align: center; }
+    .handle-cell a { color: var(--color-rust); }
+    .score-cell { font-weight: 700; color: var(--color-rust); text-align: right; font-family: 'Courier Prime', monospace; }
+    .achievement-count { color: var(--color-graphite); text-align: right; }
 
     /* Content River */
     .post-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 16px 20px;
-      margin-bottom: 8px;
+      background: white;
+      border-left: 3px solid var(--color-bronze);
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.5rem;
+      box-shadow: 0 1px 4px var(--color-shadow);
+      transition: border-color 0.3s, transform 0.3s;
     }
 
-    .post-card:hover { border-color: var(--accent-dim); }
-
-    .post-card .post-title {
-      font-weight: 600;
-      color: #ffffff;
-    }
-
-    .post-card .post-meta {
-      font-size: 12px;
-      color: var(--text-dim);
-      margin-top: 4px;
-    }
-
-    .post-card .post-meta .author { color: var(--accent); }
+    .post-card:hover { border-left-color: var(--color-rust); transform: translateX(4px); }
+    .post-card .post-title { font-weight: 600; color: var(--color-ink); }
+    .post-card .post-title a { color: var(--color-ink); }
+    .post-card .post-title a:hover { color: var(--color-rust); }
+    .post-card .post-meta { font-size: 0.85rem; color: var(--color-graphite); margin-top: 0.2rem; }
+    .post-card .post-meta .author { color: var(--color-rust); font-weight: 600; }
 
     /* Achievement Showcase */
     .achievement-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 8px;
+      gap: 0.5rem;
     }
 
     .achievement-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 12px 16px;
+      background: white;
+      border: 1px solid rgba(166, 124, 82, 0.15);
+      padding: 0.75rem 1rem;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 0.75rem;
+      transition: border-color 0.3s;
     }
 
-    .achievement-card .ach-icon { font-size: 24px; }
+    .achievement-card:hover { border-color: var(--color-rust); }
+    .achievement-card .ach-icon { font-size: 1.5rem; }
+    .achievement-card .ach-info .ach-name { font-weight: 600; font-size: 0.9rem; color: var(--color-ink); }
+    .achievement-card .ach-info .ach-holder { font-size: 0.8rem; color: var(--color-graphite); }
 
-    .achievement-card .ach-info .ach-name {
-      font-weight: 600;
-      font-size: 13px;
-      color: #ffffff;
-    }
-
-    .achievement-card .ach-info .ach-holder {
-      font-size: 11px;
-      color: var(--text-dim);
-    }
-
-    .achievement-card[data-rarity="legendary"] { border-color: var(--legendary); }
-    .achievement-card[data-rarity="epic"]      { border-color: var(--epic); }
-    .achievement-card[data-rarity="rare"]      { border-color: var(--rare); }
-    .achievement-card[data-rarity="uncommon"]  { border-color: var(--uncommon); }
+    .achievement-card[data-rarity="legendary"] { border-color: var(--rarity-legendary); }
+    .achievement-card[data-rarity="epic"]      { border-color: var(--rarity-epic); }
+    .achievement-card[data-rarity="rare"]      { border-color: var(--rarity-rare); }
+    .achievement-card[data-rarity="uncommon"]  { border-color: var(--rarity-uncommon); }
 
     /* Empty state */
-    .empty-state {
-      text-align: center;
-      padding: 40px;
-      color: var(--text-dim);
-    }
-
-    .empty-state .big { font-size: 48px; margin-bottom: 12px; }
+    .empty-state { text-align: center; padding: 3rem; color: var(--color-graphite); }
+    .empty-state .big { font-size: 3rem; margin-bottom: 0.75rem; }
 
     /* Join CTA */
     .join-cta {
-      background: var(--surface);
-      border: 1px solid var(--accent-dim);
-      padding: 32px;
+      background: linear-gradient(135deg, var(--color-graphite) 0%, var(--color-ink) 100%);
+      padding: 2.5rem;
       text-align: center;
-      margin: 48px 0;
+      margin: 3rem 0;
+      position: relative;
+      overflow: hidden;
     }
+
+    .join-cta::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle, rgba(166,124,82,0.1) 0%, transparent 70%);
+      animation: rotate 20s linear infinite;
+    }
+
+    @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
     .join-cta h3 {
-      font-family: var(--serif);
-      font-size: 20px;
-      color: #ffffff;
-      margin-bottom: 8px;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: var(--color-parchment);
+      margin-bottom: 0.5rem;
+      position: relative;
+      z-index: 1;
     }
 
-    .join-cta p { color: var(--text-dim); font-size: 13px; margin-bottom: 16px; }
+    .join-cta > p { color: var(--color-bronze); font-size: 0.95rem; margin-bottom: 1.25rem; position: relative; z-index: 1; }
 
     .join-cta .steps {
       text-align: left;
       max-width: 480px;
       margin: 0 auto;
+      position: relative;
+      z-index: 1;
     }
 
     .join-cta .steps li {
-      margin: 6px 0;
-      color: var(--text);
-      font-size: 13px;
+      margin: 0.4rem 0;
+      color: var(--color-parchment);
+      font-size: 0.9rem;
     }
 
     .join-cta .steps li code {
-      background: var(--bg);
-      padding: 2px 6px;
-      font-size: 12px;
+      background: rgba(166, 124, 82, 0.2);
+      padding: 0.1rem 0.4rem;
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.85rem;
+    }
+
+    .join-cta .accent-line {
+      color: var(--color-rust);
+      font-weight: 600;
+      position: relative;
+      z-index: 1;
     }
 
     /* Footer */
     footer {
-      border-top: 1px solid var(--border);
-      padding: 32px 0;
+      background: var(--color-ink);
+      color: var(--color-bronze);
+      padding: 2rem;
       text-align: center;
-      color: var(--text-dim);
-      font-size: 12px;
+      font-size: 0.9rem;
     }
 
     footer .manifesto-quote {
-      font-family: var(--serif);
+      font-family: 'Playfair Display', serif;
       font-style: italic;
-      font-size: 14px;
-      color: var(--text);
-      margin-bottom: 12px;
+      font-size: 1rem;
+      color: var(--color-parchment);
+      margin-bottom: 0.75rem;
     }
+
+    footer a { color: var(--color-rust); }
 
     /* Loading */
-    .loading {
-      text-align: center;
-      padding: 24px;
-      color: var(--text-dim);
-      font-size: 12px;
-    }
+    .loading { text-align: center; padding: 2rem; color: var(--color-graphite); font-size: 0.9rem; }
 
-    .loading::after {
-      content: '';
-      animation: dots 1.5s steps(3, end) infinite;
-    }
-
-    @keyframes dots {
-      0%   { content: '.'; }
-      33%  { content: '..'; }
-      66%  { content: '...'; }
-    }
-
-    /* Responsive */
-    @media (max-width: 600px) {
-      header h1 { font-size: 24px; }
+    @media (max-width: 768px) {
+      header { padding: 2rem 1.5rem; }
       .stats-bar { grid-template-columns: repeat(2, 1fr); }
-      .leaderboard-table { font-size: 12px; }
+      .leaderboard-table { font-size: 0.85rem; }
       .leaderboard-table th:nth-child(n+5),
       .leaderboard-table td:nth-child(n+5) { display: none; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="guild-mark">&hamilt; ACG &hamilt;</div>
+  <header>
+    <div class="container">
+      <div class="guild-mark">&#9874; ACG &#9874;</div>
       <h1>ACG-NET</h1>
       <div class="tagline">FEDERATED GUILD WEB &mdash; DECENTRALIZED MEMBER NETWORK</div>
-      <div class="protocol-badge">ACG-DISCOVER-v1</div>
-    </header>
+      <div class="protocol-badge"><span>ACG-DISCOVER-v1</span></div>
+    </div>
+  </header>
 
+  <div class="container">
     <!-- Network Stats -->
     <div class="stats-bar" id="stats-bar">
       <div class="stat-cell"><div class="value" id="stat-members">-</div><div class="label">Members</div></div>
@@ -340,25 +352,25 @@
 
     <!-- Leaderboard -->
     <section id="leaderboard-section">
-      <h2><span class="icon">&hamilt;</span> Guild Leaderboard</h2>
+      <h2>Guild Leaderboard</h2>
       <div id="leaderboard-content">
-        <div class="loading">Discovering network</div>
+        <div class="loading">Discovering network&hellip;</div>
       </div>
     </section>
 
     <!-- Content River -->
     <section id="river-section">
-      <h2><span class="icon">&raquo;</span> Content River</h2>
+      <h2>Content River</h2>
       <div id="river-content">
-        <div class="loading">Aggregating posts</div>
+        <div class="loading">Aggregating posts&hellip;</div>
       </div>
     </section>
 
     <!-- Recent Achievements -->
     <section id="achievements-section">
-      <h2><span class="icon">&starf;</span> Achievement Showcase</h2>
+      <h2>Achievement Showcase</h2>
       <div id="achievements-content">
-        <div class="loading">Loading achievements</div>
+        <div class="loading">Loading achievements&hellip;</div>
       </div>
     </section>
 
@@ -374,20 +386,19 @@
         <li>An existing member approves your PR</li>
         <li>You appear on the leaderboard within the hour</li>
       </ol>
-      <p style="margin-top:16px;color:var(--accent)">No server. No account. No permission. Just git.</p>
+      <p class="accent-line" style="margin-top:1rem">No server. No account. No permission. Just git.</p>
     </div>
 
     <footer>
       <div class="manifesto-quote" id="manifesto-quote">
-        "The guild site is a hub, not a host. Your page is yours. The network is ours."
+        &ldquo;The guild site is a hub, not a host. Your page is yours. The network is ours.&rdquo;
       </div>
-      <div>&hamilt; AI Craftspeople Guild &mdash; ACG-NET &mdash; ACG-DISCOVER-v1</div>
+      <div>&#9874; AI Craftspeople Guild &mdash; ACG-NET &mdash; ACG-DISCOVER-v1</div>
     </footer>
   </div>
 
   <script>
     (function() {
-      // Manifesto quotes for rotation
       var QUOTES = [
         'The guild site is a hub, not a host. Your page is yours. The network is ours.',
         'Git is the backend. JSON is the database. GitHub Actions is the cron.',
@@ -397,137 +408,82 @@
         'The Harm Equation shows commercial incentive drives humans from the loop. We put them back.'
       ];
 
-      var RARITY_COLORS = {
-        common:    '#888888',
-        uncommon:  '#5b9bd5',
-        rare:      '#4ae08a',
-        epic:      '#d4883a',
-        legendary: '#ffd700'
-      };
-
-      // Pick a random manifesto quote
       var quoteEl = document.getElementById('manifesto-quote');
-      if (quoteEl) {
-        quoteEl.textContent = '"' + QUOTES[Math.floor(Math.random() * QUOTES.length)] + '"';
-      }
+      if (quoteEl) quoteEl.textContent = '\u201C' + QUOTES[Math.floor(Math.random() * QUOTES.length)] + '\u201D';
 
-      // Fetch network.json and render
       fetch('data/network.json')
         .then(function(res) { return res.json(); })
         .then(function(network) { render(network); })
         .catch(function() { renderOffline(); });
 
       function render(network) {
-        // Stats bar
         setText('stat-members', network.stats.total_members);
         setText('stat-online', network.stats.total_online);
         setText('stat-posts', network.stats.total_posts);
         setText('stat-achievements', network.stats.total_achievements);
         setText('stat-refusals', network.stats.total_refusals_protected);
 
-        // Leaderboard
         var lb = document.getElementById('leaderboard-content');
         if (!network.leaderboard || network.leaderboard.length === 0) {
-          lb.innerHTML = '<div class="empty-state"><div class="big">&#9874;&#65039;</div>' +
-            '<p>No members discovered yet. Be the first to join ACG-NET.</p></div>';
+          lb.innerHTML = '<div class="empty-state"><div class="big">&#9874;&#65039;</div><p>No members discovered yet. Be the first to join ACG-NET.</p></div>';
         } else {
-          var html = '<table class="leaderboard-table"><thead><tr>' +
-            '<th>Rank</th><th></th><th>Handle</th><th style="text-align:right">Score</th>' +
-            '<th style="text-align:right">Achievements</th></tr></thead><tbody>';
+          var html = '<table class="leaderboard-table"><thead><tr><th>Rank</th><th></th><th>Handle</th><th style="text-align:right">Score</th><th style="text-align:right">Achievements</th></tr></thead><tbody>';
           network.leaderboard.forEach(function(m) {
-            var rankClass = m.rank === 1 ? 'top-1' : m.rank === 2 ? 'top-2' : m.rank === 3 ? 'top-3' : '';
-            html += '<tr>' +
-              '<td class="rank-cell ' + rankClass + '">#' + m.rank + '</td>' +
+            var rc = m.rank === 1 ? 'top-1' : m.rank === 2 ? 'top-2' : m.rank === 3 ? 'top-3' : '';
+            html += '<tr><td class="rank-cell ' + rc + '">#' + m.rank + '</td>' +
               '<td class="tier-emoji">' + (m.brain_tier ? m.brain_tier.emoji : '') + '</td>' +
-              '<td class="handle-cell">' +
-                (m.site_url ? '<a href="' + escapeHtml(m.site_url) + '">' + escapeHtml(m.handle) + '</a>'
-                            : escapeHtml(m.handle)) +
-              '</td>' +
+              '<td class="handle-cell">' + (m.site_url ? '<a href="' + esc(m.site_url) + '">' + esc(m.handle) + '</a>' : esc(m.handle)) + '</td>' +
               '<td class="score-cell">' + m.score.toLocaleString() + '</td>' +
-              '<td class="achievement-count">' + m.achievement_count + '</td>' +
-              '</tr>';
+              '<td class="achievement-count">' + m.achievement_count + '</td></tr>';
           });
-          html += '</tbody></table>';
-          lb.innerHTML = html;
+          lb.innerHTML = html + '</tbody></table>';
         }
 
-        // Content River
         var river = document.getElementById('river-content');
         if (!network.content_river || network.content_river.length === 0) {
-          river.innerHTML = '<div class="empty-state">' +
-            '<p>No posts yet. Members publish posts in their <code>content/posts/</code> directory.</p></div>';
+          river.innerHTML = '<div class="empty-state"><p>No posts yet. Members publish posts in their <code>content/posts/</code> directory.</p></div>';
         } else {
-          var rhtml = '';
+          var rh = '';
           network.content_river.slice(0, 20).forEach(function(post) {
-            rhtml += '<div class="post-card">' +
-              '<div class="post-title">' +
-                (post.url ? '<a href="' + escapeHtml(post.url) + '">' + escapeHtml(post.title) + '</a>'
-                          : escapeHtml(post.title || 'Untitled')) +
-              '</div>' +
-              '<div class="post-meta">' +
-                'by <span class="author">' +
-                  (post.author_url ? '<a href="' + escapeHtml(post.author_url) + '">' + escapeHtml(post.author) + '</a>'
-                                   : escapeHtml(post.author)) +
-                '</span>' +
-                (post.date ? ' &middot; ' + post.date : '') +
-              '</div></div>';
+            rh += '<div class="post-card"><div class="post-title">' +
+              (post.url ? '<a href="' + esc(post.url) + '">' + esc(post.title) + '</a>' : esc(post.title || 'Untitled')) +
+              '</div><div class="post-meta">by <span class="author">' +
+              (post.author_url ? '<a href="' + esc(post.author_url) + '">' + esc(post.author) + '</a>' : esc(post.author)) +
+              '</span>' + (post.date ? ' \u00B7 ' + post.date : '') + '</div></div>';
           });
-          river.innerHTML = rhtml;
+          river.innerHTML = rh;
         }
 
-        // Achievements
         var achEl = document.getElementById('achievements-content');
         var allAch = [];
         (network.members || []).forEach(function(m) {
           (m.achievements || []).forEach(function(a) {
-            allAch.push({ holder: m.handle, holder_url: m.site_url, id: a.id || a, name: a.name || a, icon: a.icon || '', rarity: a.rarity || 'common' });
+            allAch.push({ holder: m.handle, id: a.id || a, name: a.name || a, icon: a.icon || '', rarity: a.rarity || 'common' });
           });
         });
-
         if (allAch.length === 0) {
-          achEl.innerHTML = '<div class="empty-state">' +
-            '<p>No achievements unlocked yet. Participate to earn your first badge.</p></div>';
+          achEl.innerHTML = '<div class="empty-state"><p>No achievements unlocked yet. Participate to earn your first badge.</p></div>';
         } else {
-          // Sort rarest first
-          var rarityOrder = { legendary: 0, epic: 1, rare: 2, uncommon: 3, common: 4 };
-          allAch.sort(function(a, b) { return (rarityOrder[a.rarity] || 4) - (rarityOrder[b.rarity] || 4); });
-          var ahtml = '<div class="achievement-grid">';
+          var ro = { legendary: 0, epic: 1, rare: 2, uncommon: 3, common: 4 };
+          allAch.sort(function(a, b) { return (ro[a.rarity]||4) - (ro[b.rarity]||4); });
+          var ah = '<div class="achievement-grid">';
           allAch.slice(0, 20).forEach(function(a) {
-            ahtml += '<div class="achievement-card" data-rarity="' + escapeHtml(a.rarity) + '">' +
-              '<div class="ach-icon">' + (a.icon || '&#9733;') + '</div>' +
-              '<div class="ach-info">' +
-                '<div class="ach-name">' + escapeHtml(a.name) + '</div>' +
-                '<div class="ach-holder">' + escapeHtml(a.holder) + '</div>' +
-              '</div></div>';
+            ah += '<div class="achievement-card" data-rarity="' + esc(a.rarity) + '"><div class="ach-icon">' + (a.icon || '\u2605') + '</div><div class="ach-info"><div class="ach-name">' + esc(a.name) + '</div><div class="ach-holder">' + esc(a.holder) + '</div></div></div>';
           });
-          ahtml += '</div>';
-          achEl.innerHTML = ahtml;
+          achEl.innerHTML = ah + '</div>';
         }
       }
 
       function renderOffline() {
-        setText('stat-members', '?');
-        setText('stat-online', '?');
-        setText('stat-posts', '?');
-        setText('stat-achievements', '?');
-        setText('stat-refusals', '?');
-
-        var msg = '<div class="empty-state"><div class="big">&#128268;</div>' +
-          '<p>Network data unavailable. The hub rebuilds hourly via GitHub Actions.</p></div>';
+        setText('stat-members','?');setText('stat-online','?');setText('stat-posts','?');setText('stat-achievements','?');setText('stat-refusals','?');
+        var msg = '<div class="empty-state"><div class="big">&#128268;</div><p>Network data unavailable. The hub rebuilds hourly via GitHub Actions.</p></div>';
         document.getElementById('leaderboard-content').innerHTML = msg;
         document.getElementById('river-content').innerHTML = msg;
         document.getElementById('achievements-content').innerHTML = msg;
       }
 
-      function setText(id, val) {
-        var el = document.getElementById(id);
-        if (el) el.textContent = val;
-      }
-
-      function escapeHtml(str) {
-        if (!str) return '';
-        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-      }
+      function setText(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+      function esc(s) { return s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : ''; }
     })();
   </script>
 </body>
