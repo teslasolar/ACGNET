@@ -1,0 +1,224 @@
+// ACG-KCC GuildC Contract: Ethical Refusal Register
+// The spine of the guild. Spines do not bend.
+//
+// This contract implements ACG-R-002: Protected Ethical Refusal Register.
+// Refusals bypass the L2 checkpoint queue and write directly to L1.
+// SLA timers are on-chain. The blockchain has receipts.
+
+pragma guildcVersion ^1.0;
+import "./PackMLStates.guildc";
+import "./SLATimer.guildc";
+
+contract EthicalRefusal {
+
+    // ── Types ──
+
+    enum RefusalStatus {
+        FILED,
+        UNDER_REVIEW,
+        ESCALATED,
+        RESOLVED_UPHELD,
+        RESOLVED_WITHDRAWN,
+        SLA_BREACH
+    }
+
+    enum RetaliationSeverity {
+        NONE,
+        SUSPECTED,
+        CONFIRMED,
+        SEVERE
+    }
+
+    struct Refusal {
+        U64  id;
+        U256 professional_hash;   // hash(name + salt) — identity protected
+        U256 org_hash;            // hash of organization
+        U64  filed_timestamp;
+        U64  sla_deadline;        // 15 business days from filing
+        RefusalStatus status;
+        U256 reviewer_hash;       // assigned independent reviewer
+        U256 evidence_ipfs;       // IPFS CID for evidence bundle
+        bool retaliation_flag;
+        RetaliationSeverity retaliation_severity;
+        U64  resolved_timestamp;
+        U8   outcome_code;        // 0=pending, 1=upheld, 2=withdrawn, 3=escalated
+    }
+
+    // ── State ──
+
+    mapping(U64 => Refusal) public register;
+    U64 public refusal_count;
+    U64 public active_refusals;
+    U64 public upheld_refusals;
+    U64 public sla_breaches;
+
+    // ── Events ──
+
+    event RefusalFiled(U64 indexed id, U256 professional_hash, U64 deadline);
+    event ReviewerAssigned(U64 indexed id, U256 reviewer_hash);
+    event SLAWarning(U64 indexed id, U64 days_remaining);
+    event SLABreach(U64 indexed id);
+    event RetaliationDetected(U64 indexed id, RetaliationSeverity severity);
+    event RefusalResolved(U64 indexed id, RefusalStatus outcome);
+    event EscalationTriggered(U64 indexed id, string reason);
+
+    // ── Constants ──
+
+    U64 constant SLA_BUSINESS_DAYS = 15;
+    U64 constant SLA_WARNING_DAYS = 3;
+    U64 constant SLA_CRITICAL_DAYS = 1;
+    U64 constant RETALIATION_WINDOW_DAYS = 90;
+
+    // ── Access Control ──
+
+    modifier onlyMember() {
+        require(hasRole(msg.sender, MEMBER), "Caller must be guild member");
+        _;
+    }
+
+    modifier onlyReviewer(U64 refusalId) {
+        require(
+            register[refusalId].reviewer_hash == hashOf(msg.sender),
+            "Caller must be assigned reviewer"
+        );
+        _;
+    }
+
+    modifier onlyCommittee() {
+        require(hasRole(msg.sender, COMMITTEE), "Caller must be committee member");
+        _;
+    }
+
+    // ── Core Functions ──
+
+    /// File an ethical refusal. Writes directly to L1 — bypasses checkpoint queue.
+    public U0 fileRefusal(
+        U256 professional_hash,
+        U256 org_hash,
+        U256 evidence_ipfs
+    ) onlyMember {
+        U64 id = refusal_count++;
+        U64 deadline = calculateBusinessDays(block.timestamp, SLA_BUSINESS_DAYS);
+
+        register[id] = Refusal({
+            id: id,
+            professional_hash: professional_hash,
+            org_hash: org_hash,
+            filed_timestamp: block.timestamp,
+            sla_deadline: deadline,
+            status: RefusalStatus.FILED,
+            reviewer_hash: U256(0),
+            evidence_ipfs: evidence_ipfs,
+            retaliation_flag: false,
+            retaliation_severity: RetaliationSeverity.NONE,
+            resolved_timestamp: 0,
+            outcome_code: 0
+        });
+
+        active_refusals++;
+
+        // CRITICAL: Direct L1 write. No batching. No waiting.
+        commitToL1(register[id]);
+
+        emit RefusalFiled(id, professional_hash, deadline);
+    }
+
+    /// Assign an independent reviewer to a refusal.
+    public U0 assignReviewer(U64 id, U256 reviewer_hash) onlyCommittee {
+        require(register[id].status == RefusalStatus.FILED, "Refusal must be in FILED state");
+        require(reviewer_hash != register[id].professional_hash, "Reviewer cannot be the filer");
+
+        register[id].reviewer_hash = reviewer_hash;
+        register[id].status = RefusalStatus.UNDER_REVIEW;
+
+        emit ReviewerAssigned(id, reviewer_hash);
+    }
+
+    /// Resolve a refusal. Only the assigned reviewer or committee can resolve.
+    public U0 resolveRefusal(U64 id, U8 outcome_code) onlyReviewer(id) {
+        require(
+            register[id].status == RefusalStatus.UNDER_REVIEW ||
+            register[id].status == RefusalStatus.ESCALATED,
+            "Refusal must be under review or escalated"
+        );
+        require(outcome_code == 1 || outcome_code == 2, "Outcome must be upheld(1) or withdrawn(2)");
+
+        if (outcome_code == 1) {
+            register[id].status = RefusalStatus.RESOLVED_UPHELD;
+            upheld_refusals++;
+        } else {
+            register[id].status = RefusalStatus.RESOLVED_WITHDRAWN;
+        }
+
+        register[id].resolved_timestamp = block.timestamp;
+        register[id].outcome_code = outcome_code;
+        active_refusals--;
+
+        commitToL1(register[id]);
+        emit RefusalResolved(id, register[id].status);
+    }
+
+    /// Flag retaliation detected by the retaliation detection engine.
+    public U0 flagRetaliation(
+        U64 id,
+        RetaliationSeverity severity
+    ) onlyCommittee {
+        register[id].retaliation_flag = true;
+        register[id].retaliation_severity = severity;
+
+        commitToL1(register[id]);
+        emit RetaliationDetected(id, severity);
+
+        if (severity >= RetaliationSeverity.CONFIRMED) {
+            register[id].status = RefusalStatus.ESCALATED;
+            emit EscalationTriggered(id, "Confirmed retaliation detected");
+        }
+    }
+
+    // ── SLA Enforcement ──
+
+    /// Called by the error correction agent on each L2 block.
+    /// Checks all active refusals against their SLA deadlines.
+    public U0 checkSLAs() {
+        for (U64 i = 0; i < refusal_count; i++) {
+            if (register[i].status == RefusalStatus.FILED ||
+                register[i].status == RefusalStatus.UNDER_REVIEW) {
+
+                U64 remaining = register[i].sla_deadline > block.timestamp
+                    ? register[i].sla_deadline - block.timestamp
+                    : 0;
+
+                U64 remainingDays = remaining / 86400;
+
+                if (remainingDays <= SLA_CRITICAL_DAYS && remainingDays > 0) {
+                    emit SLAWarning(i, remainingDays);
+                }
+
+                if (remaining == 0) {
+                    register[i].status = RefusalStatus.SLA_BREACH;
+                    sla_breaches++;
+                    commitToL1(register[i]);
+                    emit SLABreach(i);
+                }
+            }
+        }
+    }
+
+    // ── View Functions ──
+
+    public view Refusal getRefusal(U64 id) {
+        return register[id];
+    }
+
+    public view U64 getActiveCount() {
+        return active_refusals;
+    }
+
+    public view U64 getUpheldCount() {
+        return upheld_refusals;
+    }
+
+    public view U64 getBreachCount() {
+        return sla_breaches;
+    }
+}

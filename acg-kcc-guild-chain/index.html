@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACG-KCC — Guild Chain Explorer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Work+Sans:wght@300;400;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-parchment: #F5F1E8;
+            --color-ink: #1A1614;
+            --color-rust: #C84B31;
+            --color-bronze: #A67C52;
+            --color-graphite: #2D3436;
+            --color-highlight: #FFF4E0;
+            --color-shadow: rgba(26, 22, 20, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Work Sans', sans-serif;
+            background: var(--color-parchment);
+            color: var(--color-ink);
+            line-height: 1.6;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(26,22,20,0.02) 2px, rgba(26,22,20,0.02) 4px),
+                              repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(26,22,20,0.02) 2px, rgba(26,22,20,0.02) 4px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        header {
+            position: relative;
+            padding: 3rem 2rem 2.5rem;
+            background: linear-gradient(135deg, var(--color-graphite) 0%, var(--color-ink) 100%);
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, var(--color-rust) 0%, var(--color-bronze) 50%, var(--color-rust) 100%);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer { 0%, 100% { opacity: 0.7; } 50% { opacity: 1; } }
+
+        .guild-mark {
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .guild-mark .emblem {
+            font-family: 'Courier Prime', monospace;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--color-bronze);
+        }
+
+        header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            color: var(--color-parchment);
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 300;
+            color: var(--color-bronze);
+            text-align: center;
+            letter-spacing: 0.04em;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .back-link a {
+            color: var(--color-bronze);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .back-link a:hover { color: var(--color-rust); }
+
+        .container {
+            max-width: 1060px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Stats */
+        .chain-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1px;
+            background: rgba(166, 124, 82, 0.2);
+            border: 1px solid rgba(166, 124, 82, 0.2);
+            margin: 3rem 0;
+        }
+
+        .chain-stat {
+            background: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .chain-stat .value {
+            font-family: 'Courier Prime', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-rust);
+        }
+
+        .chain-stat .label {
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--color-graphite);
+            margin-top: 0.25rem;
+        }
+
+        /* Sections */
+        .section {
+            background: white;
+            padding: 2.5rem;
+            box-shadow: 0 4px 6px var(--color-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            color: var(--color-rust);
+            margin-bottom: 1.5rem;
+        }
+
+        .section h2::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 3px;
+            background: var(--color-bronze);
+            margin-top: 0.6rem;
+        }
+
+        /* Agents Grid */
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1rem;
+        }
+
+        .agent-card {
+            border: 1px solid rgba(166, 124, 82, 0.2);
+            padding: 1.25rem;
+            background: var(--color-parchment);
+        }
+
+        .agent-card .agent-id {
+            font-family: 'Courier Prime', monospace;
+            font-size: 0.8rem;
+            color: var(--color-bronze);
+            margin-bottom: 0.25rem;
+        }
+
+        .agent-card .agent-name {
+            font-weight: 600;
+            color: var(--color-ink);
+            font-size: 1.05rem;
+        }
+
+        .agent-card .agent-role {
+            font-size: 0.9rem;
+            color: var(--color-graphite);
+            margin-top: 0.25rem;
+        }
+
+        .agent-card .agent-status {
+            display: inline-block;
+            margin-top: 0.5rem;
+            padding: 0.2rem 0.6rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            background: rgba(74, 224, 138, 0.15);
+            color: #2a8a4a;
+            border: 1px solid rgba(74, 224, 138, 0.3);
+        }
+
+        /* Contracts */
+        .contract-list { list-style: none; }
+
+        .contract-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(166, 124, 82, 0.15);
+        }
+
+        .contract-item:last-child { border-bottom: none; }
+
+        .contract-icon {
+            font-size: 1.5rem;
+            width: 40px;
+            text-align: center;
+        }
+
+        .contract-info .contract-name {
+            font-weight: 600;
+            color: var(--color-ink);
+        }
+
+        .contract-info .contract-file {
+            font-family: 'Courier Prime', monospace;
+            font-size: 0.85rem;
+            color: var(--color-bronze);
+        }
+
+        .contract-info .contract-desc {
+            font-size: 0.9rem;
+            color: var(--color-graphite);
+            margin-top: 0.2rem;
+        }
+
+        /* Layers */
+        .layers-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .layer-card {
+            border: 1px solid rgba(166, 124, 82, 0.25);
+            padding: 1.5rem;
+        }
+
+        .layer-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            color: var(--color-ink);
+            margin-bottom: 0.75rem;
+        }
+
+        .layer-card .spec-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.3rem 0;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(166, 124, 82, 0.1);
+        }
+
+        .layer-card .spec-label { color: var(--color-graphite); }
+        .layer-card .spec-value { font-weight: 600; color: var(--color-ink); }
+
+        /* Tokenomics */
+        .token-dist {
+            margin-top: 1rem;
+        }
+
+        .token-bar {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .token-bar .bar-label {
+            width: 180px;
+            font-size: 0.9rem;
+            color: var(--color-graphite);
+        }
+
+        .token-bar .bar-track {
+            flex: 1;
+            height: 24px;
+            background: var(--color-parchment);
+            position: relative;
+        }
+
+        .token-bar .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-rust), var(--color-bronze));
+        }
+
+        .token-bar .bar-value {
+            width: 100px;
+            text-align: right;
+            font-family: 'Courier Prime', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--color-ink);
+        }
+
+        /* Node */
+        .node-cmd {
+            background: var(--color-ink);
+            color: var(--color-parchment);
+            padding: 1.25rem 1.5rem;
+            font-family: 'Courier Prime', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-top: 1rem;
+            overflow-x: auto;
+        }
+
+        .node-cmd .comment { color: var(--color-bronze); }
+        .node-cmd .cmd { color: #4ae08a; }
+
+        /* Footer */
+        footer {
+            background: var(--color-ink);
+            color: var(--color-bronze);
+            padding: 2rem;
+            text-align: center;
+            margin-top: 4rem;
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--color-rust);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .layers-grid { grid-template-columns: 1fr; }
+            .agents-grid { grid-template-columns: 1fr; }
+            .token-bar .bar-label { width: 120px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="guild-mark"><div class="emblem">&#9874; ACG &#9874;</div></div>
+            <h1>ACG-KCC Guild Chain</h1>
+            <p class="subtitle">Permissioned Blockchain &mdash; Protected Ethical Refusal Register &mdash; 510,510 GLD</p>
+            <div class="back-link"><a href="../">&larr; Back to ACG-NET</a></div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- Chain Stats -->
+        <div class="chain-stats">
+            <div class="chain-stat"><div class="value">510,510</div><div class="label">Total GLD Supply</div></div>
+            <div class="chain-stat"><div class="value">L1+L2</div><div class="label">Dual Layer</div></div>
+            <div class="chain-stat"><div class="value">8</div><div class="label">Vertex Agents</div></div>
+            <div class="chain-stat"><div class="value">512</div><div class="label">Operation Slots</div></div>
+            <div class="chain-stat"><div class="value">6,152</div><div class="label">Total Agents</div></div>
+            <div class="chain-stat"><div class="value">15:1</div><div class="label">Compression Ratio</div></div>
+        </div>
+
+        <!-- Dual Layer -->
+        <div class="section">
+            <h2>Dual-Layer Architecture</h2>
+            <div class="layers-grid">
+                <div class="layer-card">
+                    <h3>Layer 1 &mdash; Authority Chain</h3>
+                    <div class="spec-row"><span class="spec-label">Consensus</span><span class="spec-value">Proof of Authority (PoA)</span></div>
+                    <div class="spec-row"><span class="spec-label">Validators</span><span class="spec-value">5&ndash;11 elders</span></div>
+                    <div class="spec-row"><span class="spec-label">Block Time</span><span class="spec-value">60 seconds</span></div>
+                    <div class="spec-row"><span class="spec-label">Block Size</span><span class="spec-value">1 MB (compressed)</span></div>
+                    <div class="spec-row"><span class="spec-label">Finality</span><span class="spec-value">1 block (instant)</span></div>
+                    <div class="spec-row"><span class="spec-label">Purpose</span><span class="spec-value">Permanent records</span></div>
+                    <div class="spec-row"><span class="spec-label">Hardware</span><span class="spec-value">Raspberry Pi 4</span></div>
+                </div>
+                <div class="layer-card">
+                    <h3>Layer 2 &mdash; Operations Chain</h3>
+                    <div class="spec-row"><span class="spec-label">Consensus</span><span class="spec-value">Delegated PoS (DPoS)</span></div>
+                    <div class="spec-row"><span class="spec-label">Validators</span><span class="spec-value">100+ GLD staked</span></div>
+                    <div class="spec-row"><span class="spec-label">Block Time</span><span class="spec-value">5 seconds</span></div>
+                    <div class="spec-row"><span class="spec-label">Throughput</span><span class="spec-value">1,000 TPS</span></div>
+                    <div class="spec-row"><span class="spec-label">Finality</span><span class="spec-value">2 blocks (10s)</span></div>
+                    <div class="spec-row"><span class="spec-label">Checkpoint</span><span class="spec-value">Every 50 blocks &rarr; L1</span></div>
+                    <div class="spec-row"><span class="spec-label">Purpose</span><span class="spec-value">Real-time operations</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cube Agents -->
+        <div class="section">
+            <h2>Cube Agent System</h2>
+            <div class="agents-grid">
+                <div class="agent-card">
+                    <div class="agent-id">Agent 0 &mdash; [0,0,0]</div>
+                    <div class="agent-name">VETTING AGENT</div>
+                    <div class="agent-role">ELIZA coordinator &mdash; Slots 000&ndash;127</div>
+                    <div class="agent-status">&#9679; Online</div>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-id">Agent 1 &mdash; [999,0,0]</div>
+                    <div class="agent-name">CERTIFICATION AGENT</div>
+                    <div class="agent-role">Certification lifecycle &mdash; Slots 128&ndash;191</div>
+                    <div class="agent-status">&#9679; Online</div>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-id">Agent 2 &mdash; [999,999,0]</div>
+                    <div class="agent-name">PUBLISHING AGENT</div>
+                    <div class="agent-role">Document publishing &mdash; Slots 192&ndash;255</div>
+                    <div class="agent-status">&#9679; Online</div>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-id">Agent 3 &mdash; [0,999,0]</div>
+                    <div class="agent-name">REFUSAL AGENT</div>
+                    <div class="agent-role">The guardian &mdash; Slots 256&ndash;319</div>
+                    <div class="agent-status">&#9679; Online</div>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-id">Agent 4 &mdash; [0,0,999]</div>
+                    <div class="agent-name">AUDIT AGENT</div>
+                    <div class="agent-role">Conformance auditing &mdash; Slots 320&ndash;383</div>
+                    <div class="agent-status">&#9679; Online</div>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-id">Agent 5 &mdash; [999,0,999]</div>
+                    <div class="agent-name">MEMBERSHIP AGENT</div>
+                    <div class="agent-role">Member registry &mdash; Slots 384&ndash;511</div>
+                    <div class="agent-status">&#9679; Online</div>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-id">Agent 6 &mdash; [999,999,999]</div>
+                    <div class="agent-name">RESOURCE MANAGER</div>
+                    <div class="agent-role">System &mdash; resource allocation</div>
+                    <div class="agent-status">&#9679; Online</div>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-id">Agent 7 &mdash; [0,999,999]</div>
+                    <div class="agent-name">ERROR CORRECTION</div>
+                    <div class="agent-role">System &mdash; self-healing / SLA enforcement</div>
+                    <div class="agent-status">&#9679; Online</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contracts -->
+        <div class="section">
+            <h2>Guild Contracts (GuildC)</h2>
+            <ul class="contract-list">
+                <li class="contract-item">
+                    <div class="contract-icon">&#9888;</div>
+                    <div class="contract-info">
+                        <div class="contract-name">EthicalRefusal</div>
+                        <div class="contract-file">contracts/EthicalRefusal.guildc</div>
+                        <div class="contract-desc">Protected refusal register with SLA enforcement and retaliation detection. Direct L1 write &mdash; bypasses checkpoint queue.</div>
+                    </div>
+                </li>
+                <li class="contract-item">
+                    <div class="contract-icon">&#128270;</div>
+                    <div class="contract-info">
+                        <div class="contract-name">VettingSession</div>
+                        <div class="contract-file">contracts/VettingSession.guildc</div>
+                        <div class="contract-desc">ELIZA vetting with PackML state machine. On-chain seal issuance on PASS. Checkpointed to L1.</div>
+                    </div>
+                </li>
+                <li class="contract-item">
+                    <div class="contract-icon">&#128220;</div>
+                    <div class="contract-info">
+                        <div class="contract-name">Certification</div>
+                        <div class="contract-file">contracts/Certification.guildc</div>
+                        <div class="contract-desc">Organization certification lifecycle. 3 levels (CL-1 to CL-3). 24-month expiry. Evidence on IPFS, hash on L1.</div>
+                    </div>
+                </li>
+                <li class="contract-item">
+                    <div class="contract-icon">&#128101;</div>
+                    <div class="contract-info">
+                        <div class="contract-name">Membership</div>
+                        <div class="contract-file">contracts/Membership.guildc</div>
+                        <div class="contract-desc">Member registry, GLD balances, staking, roles (member/reviewer/auditor/committee/elder).</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Tokenomics -->
+        <div class="section">
+            <h2>Tokenomics &mdash; 510,510 GLD</h2>
+            <p style="color:var(--color-graphite);margin-bottom:0.5rem">GLD is NOT a cryptocurrency. No ICO, no exchange, no speculative value. Governance weight, not money.</p>
+            <div class="token-dist">
+                <div class="token-bar">
+                    <div class="bar-label">Founding Members (20%)</div>
+                    <div class="bar-track"><div class="bar-fill" style="width:20%"></div></div>
+                    <div class="bar-value">102,102</div>
+                </div>
+                <div class="token-bar">
+                    <div class="bar-label">Active Members (40%)</div>
+                    <div class="bar-track"><div class="bar-fill" style="width:40%"></div></div>
+                    <div class="bar-value">204,204</div>
+                </div>
+                <div class="token-bar">
+                    <div class="bar-label">Operations Reserve (25%)</div>
+                    <div class="bar-track"><div class="bar-fill" style="width:25%"></div></div>
+                    <div class="bar-value">127,627</div>
+                </div>
+                <div class="token-bar">
+                    <div class="bar-label">Future Growth (15%)</div>
+                    <div class="bar-track"><div class="bar-fill" style="width:15%"></div></div>
+                    <div class="bar-value">76,577</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Run a Node -->
+        <div class="section">
+            <h2>Run a Node</h2>
+            <p style="color:var(--color-graphite);">Every guild member should be able to run a node. If the barrier is a data center, only corporations can validate. If the barrier is a Raspberry Pi, every engineer with a desk drawer can validate.</p>
+            <div class="node-cmd">
+<span class="comment"># Full node (store chain, serve data)</span>
+<span class="cmd">node scripts/node.js --type=full --port=30303</span>
+
+<span class="comment"># Validator node (requires 100 GLD stake)</span>
+<span class="cmd">node scripts/node.js --type=validator --port=30303</span>
+
+<span class="comment"># Authority node (requires committee election)</span>
+<span class="cmd">node scripts/node.js --type=authority --port=30303</span>
+
+<span class="comment"># Hardware: Raspberry Pi 4, 32GB microSD, home broadband</span>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p><strong>ACG-KCC Guild Chain</strong> &mdash; The spine doesn't bend.</p>
+        <p style="margin-top:0.5rem"><a href="../guild-chain.html">Read the White Paper</a> &middot; <a href="../">Back to ACG-NET</a> &middot; <a href="https://aicraftspeopleguild.github.io">Guild Home</a></p>
+        <p style="margin-top:1rem;opacity:0.6">&copy; 2026 AI Craftspeople Guild</p>
+    </footer>
+</body>
+</html>

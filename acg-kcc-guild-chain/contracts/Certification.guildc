@@ -1,0 +1,155 @@
+// ACG-KCC GuildC Contract: Organization Certification
+// Manages certification lifecycle: issuance, renewal, revocation.
+// Evidence stored on IPFS, hash on L1.
+// 24-month expiry. 30-day material change review window.
+
+pragma guildcVersion ^1.0;
+
+contract Certification {
+
+    // ── Types ──
+
+    enum CertLevel {
+        CL_1,   // Basic conformance
+        CL_2,   // Active alignment
+        CL_3    // Full integration
+    }
+
+    enum CertStatus {
+        PENDING,
+        ACTIVE,
+        SUSPENDED,
+        REVOKED,
+        EXPIRED,
+        UNDER_REVIEW
+    }
+
+    struct Cert {
+        U64  id;
+        U256 org_hash;
+        CertLevel level;
+        U64  issued;
+        U64  expiry;          // 24 months from issuance
+        U256 auditor_hash;
+        U256 evidence_ipfs;
+        CertStatus status;
+        U64  last_review;
+        U8   review_count;
+    }
+
+    // ── State ──
+
+    mapping(U64 => Cert) public certifications;
+    mapping(U256 => U64[]) public orgCerts;  // org_hash => cert IDs
+    U64 public cert_count;
+    U64 public active_certs;
+
+    // ── Events ──
+
+    event CertIssued(U64 indexed id, U256 org_hash, CertLevel level);
+    event CertRenewed(U64 indexed id, U64 new_expiry);
+    event CertSuspended(U64 indexed id, string reason);
+    event CertRevoked(U64 indexed id, string reason);
+    event CertExpired(U64 indexed id);
+    event MaterialChangeReported(U64 indexed id, U256 evidence_ipfs);
+
+    // ── Constants ──
+
+    U64 constant CERT_DURATION = 63072000;           // 24 months in seconds
+    U64 constant MATERIAL_CHANGE_REVIEW = 2592000;   // 30 days in seconds
+
+    // ── Access Control ──
+
+    modifier onlyAuditor() {
+        require(hasRole(msg.sender, AUDITOR), "Caller must be auditor");
+        _;
+    }
+
+    modifier onlyCommittee() {
+        require(hasRole(msg.sender, COMMITTEE), "Caller must be committee");
+        _;
+    }
+
+    // ── Core Functions ──
+
+    /// Issue a new certification after successful audit.
+    public U0 issueCert(
+        U256 org_hash,
+        CertLevel level,
+        U256 evidence_ipfs
+    ) onlyAuditor {
+        U64 id = cert_count++;
+
+        certifications[id] = Cert({
+            id: id,
+            org_hash: org_hash,
+            level: level,
+            issued: block.timestamp,
+            expiry: block.timestamp + CERT_DURATION,
+            auditor_hash: hashOf(msg.sender),
+            evidence_ipfs: evidence_ipfs,
+            status: CertStatus.ACTIVE,
+            last_review: block.timestamp,
+            review_count: 0
+        });
+
+        orgCerts[org_hash].push(id);
+        active_certs++;
+
+        commitToL1(certifications[id]);
+        emit CertIssued(id, org_hash, level);
+    }
+
+    /// Suspend a certification pending review.
+    public U0 suspendCert(U64 id, string reason) onlyCommittee {
+        require(certifications[id].status == CertStatus.ACTIVE, "Cert must be active");
+
+        certifications[id].status = CertStatus.SUSPENDED;
+        active_certs--;
+
+        commitToL1(certifications[id]);
+        emit CertSuspended(id, reason);
+    }
+
+    /// Revoke a certification permanently.
+    public U0 revokeCert(U64 id, string reason) onlyCommittee {
+        require(
+            certifications[id].status == CertStatus.ACTIVE ||
+            certifications[id].status == CertStatus.SUSPENDED,
+            "Cert must be active or suspended"
+        );
+
+        certifications[id].status = CertStatus.REVOKED;
+        if (certifications[id].status == CertStatus.ACTIVE) {
+            active_certs--;
+        }
+
+        commitToL1(certifications[id]);
+        emit CertRevoked(id, reason);
+    }
+
+    /// Check and expire overdue certifications.
+    public U0 checkExpiry() {
+        for (U64 i = 0; i < cert_count; i++) {
+            if (certifications[i].status == CertStatus.ACTIVE &&
+                block.timestamp > certifications[i].expiry) {
+                certifications[i].status = CertStatus.EXPIRED;
+                active_certs--;
+                commitToL1(certifications[i]);
+                emit CertExpired(i);
+            }
+        }
+    }
+
+    // ── View Functions ──
+
+    public view Cert getCert(U64 id) {
+        return certifications[id];
+    }
+
+    public view CertStatus getOrgStatus(U256 org_hash) {
+        U64[] memory ids = orgCerts[org_hash];
+        if (ids.length == 0) return CertStatus.PENDING;
+        return certifications[ids[ids.length - 1]].status;
+    }
+}

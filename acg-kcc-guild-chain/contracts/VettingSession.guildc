@@ -1,0 +1,197 @@
+// ACG-KCC GuildC Contract: ELIZA Vetting Sessions
+// On-chain record of membership vetting through ELIZA.
+// Session runs locally. Outcome and transcript hash go on-chain.
+// If PASS: checkpointed to L1, seal issued on-chain.
+
+pragma guildcVersion ^1.0;
+import "./PackMLStates.guildc";
+
+contract VettingSession {
+
+    // ── Types ──
+
+    enum VettingPhase {
+        IDENTITY_VERIFICATION,
+        TECHNICAL_ASSESSMENT,
+        ETHICAL_ALIGNMENT,
+        MANIFESTO_COMPREHENSION,
+        FINAL_EVALUATION
+    }
+
+    enum VettingResult {
+        PENDING,
+        PASS,
+        FAIL,
+        DEFERRED
+    }
+
+    enum PackMLState {
+        IDLE,
+        STARTING,
+        EXECUTE,
+        COMPLETING,
+        COMPLETE,
+        HOLDING,
+        HELD,
+        UNHOLDING,
+        SUSPENDING,
+        SUSPENDED,
+        UNSUSPENDING,
+        ABORTING,
+        ABORTED,
+        STOPPING,
+        STOPPED,
+        RESETTING,
+        CLEARING
+    }
+
+    struct Session {
+        U64  id;
+        U256 candidate_hash;
+        VettingPhase phase;
+        PackMLState  packml_state;
+        VettingResult result;
+        U64  started;
+        U64  completed;
+        U256 transcript_hash;   // hash of full ELIZA transcript (stored off-chain)
+        U256 model_id;          // hash of AI model used for vetting
+        U8   phases_completed;
+        U256 seal_hash;         // issued on PASS
+    }
+
+    struct Seal {
+        U64  session_id;
+        U256 candidate_hash;
+        U64  issued_timestamp;
+        U256 session_hash;
+        U64  block_number;
+        U256 model_id;
+        bool valid;
+    }
+
+    // ── State ──
+
+    mapping(U64 => Session) public sessions;
+    mapping(U256 => Seal) public seals;        // candidate_hash => seal
+    U64 public session_count;
+    U64 public pass_count;
+    U64 public fail_count;
+
+    // ── Events ──
+
+    event VettingStarted(U64 indexed id, U256 candidate_hash);
+    event PhaseCompleted(U64 indexed id, VettingPhase phase);
+    event StateTransition(U64 indexed id, PackMLState from_state, PackMLState to_state);
+    event VettingComplete(U64 indexed id, VettingResult result);
+    event SealIssued(U64 indexed id, U256 candidate_hash, U256 seal_hash);
+
+    // ── Access Control ──
+
+    modifier onlyVettingAgent() {
+        require(hasRole(msg.sender, VETTING_AGENT), "Caller must be vetting agent");
+        _;
+    }
+
+    // ── Core Functions ──
+
+    /// Start a new vetting session. Called when candidate begins ELIZA interaction.
+    public U0 startSession(U256 candidate_hash, U256 model_id) onlyVettingAgent {
+        U64 id = session_count++;
+
+        sessions[id] = Session({
+            id: id,
+            candidate_hash: candidate_hash,
+            phase: VettingPhase.IDENTITY_VERIFICATION,
+            packml_state: PackMLState.STARTING,
+            result: VettingResult.PENDING,
+            started: block.timestamp,
+            completed: 0,
+            transcript_hash: U256(0),
+            model_id: model_id,
+            phases_completed: 0,
+            seal_hash: U256(0)
+        });
+
+        emit VettingStarted(id, candidate_hash);
+        emit StateTransition(id, PackMLState.IDLE, PackMLState.STARTING);
+    }
+
+    /// Advance to next phase after current phase passes.
+    public U0 completePhase(U64 id) onlyVettingAgent {
+        Session storage s = sessions[id];
+        require(s.result == VettingResult.PENDING, "Session already completed");
+
+        emit PhaseCompleted(id, s.phase);
+        s.phases_completed++;
+
+        // Advance phase
+        if (s.phase == VettingPhase.IDENTITY_VERIFICATION) {
+            s.phase = VettingPhase.TECHNICAL_ASSESSMENT;
+        } else if (s.phase == VettingPhase.TECHNICAL_ASSESSMENT) {
+            s.phase = VettingPhase.ETHICAL_ALIGNMENT;
+        } else if (s.phase == VettingPhase.ETHICAL_ALIGNMENT) {
+            s.phase = VettingPhase.MANIFESTO_COMPREHENSION;
+        } else if (s.phase == VettingPhase.MANIFESTO_COMPREHENSION) {
+            s.phase = VettingPhase.FINAL_EVALUATION;
+        }
+
+        s.packml_state = PackMLState.EXECUTE;
+        emit StateTransition(id, PackMLState.STARTING, PackMLState.EXECUTE);
+    }
+
+    /// Complete the vetting session with a result.
+    /// On PASS: checkpoint to L1 and issue seal.
+    public U0 completeSession(
+        U64 id,
+        VettingResult result,
+        U256 transcript_hash
+    ) onlyVettingAgent {
+        Session storage s = sessions[id];
+        require(s.result == VettingResult.PENDING, "Session already completed");
+
+        s.result = result;
+        s.completed = block.timestamp;
+        s.transcript_hash = transcript_hash;
+        s.packml_state = PackMLState.COMPLETE;
+
+        if (result == VettingResult.PASS) {
+            pass_count++;
+            // Issue seal
+            U256 seal_hash = keccak256(abi.encodePacked(
+                id, s.candidate_hash, block.timestamp, block.number, s.model_id
+            ));
+            s.seal_hash = seal_hash;
+
+            seals[s.candidate_hash] = Seal({
+                session_id: id,
+                candidate_hash: s.candidate_hash,
+                issued_timestamp: block.timestamp,
+                session_hash: transcript_hash,
+                block_number: block.number,
+                model_id: s.model_id,
+                valid: true
+            });
+
+            // Checkpoint to L1
+            commitToL1(s);
+            commitToL1(seals[s.candidate_hash]);
+
+            emit SealIssued(id, s.candidate_hash, seal_hash);
+        } else {
+            fail_count++;
+        }
+
+        emit VettingComplete(id, result);
+        emit StateTransition(id, PackMLState.EXECUTE, PackMLState.COMPLETE);
+    }
+
+    // ── View Functions ──
+
+    public view Seal verifySeal(U256 candidate_hash) {
+        return seals[candidate_hash];
+    }
+
+    public view bool isMemberVetted(U256 candidate_hash) {
+        return seals[candidate_hash].valid;
+    }
+}

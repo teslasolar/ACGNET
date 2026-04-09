@@ -1,0 +1,137 @@
+// ACG-KCC GuildC Contract: Membership Registry
+// On-chain membership state. Links to vetting seals and GLD balances.
+// Members identified by hash — privacy by default.
+
+pragma guildcVersion ^1.0;
+
+contract Membership {
+
+    // ── Types ──
+
+    enum MemberStatus {
+        PENDING,
+        ACTIVE,
+        SUSPENDED,
+        INACTIVE,
+        REMOVED
+    }
+
+    enum MemberRole {
+        MEMBER,
+        REVIEWER,
+        AUDITOR,
+        COMMITTEE,
+        ELDER
+    }
+
+    struct Member {
+        U256 member_hash;
+        MemberStatus status;
+        U64  joined;
+        U256 vetting_seal;     // link to VettingSession seal
+        U64  gld_balance;
+        U64  gld_staked;
+        MemberRole role;
+        U64  last_active;
+        U64  contribution_score;
+    }
+
+    // ── State ──
+
+    mapping(U256 => Member) public members;
+    U256[] public member_list;
+    U64 public total_members;
+    U64 public active_members;
+
+    // ── Events ──
+
+    event MemberRegistered(U256 indexed member_hash, U64 timestamp);
+    event MemberActivated(U256 indexed member_hash);
+    event MemberSuspended(U256 indexed member_hash, string reason);
+    event RoleGranted(U256 indexed member_hash, MemberRole role);
+    event GLDEarned(U256 indexed member_hash, U64 amount, string reason);
+    event GLDStaked(U256 indexed member_hash, U64 amount);
+    event GLDSlashed(U256 indexed member_hash, U64 amount, string reason);
+
+    // ── Core Functions ──
+
+    /// Register a new member after passing ELIZA vetting.
+    public U0 registerMember(U256 member_hash, U256 vetting_seal) {
+        require(members[member_hash].status == MemberStatus.PENDING, "Already registered");
+
+        members[member_hash] = Member({
+            member_hash: member_hash,
+            status: MemberStatus.ACTIVE,
+            joined: block.timestamp,
+            vetting_seal: vetting_seal,
+            gld_balance: 100,  // 100 GLD for completing vetting
+            gld_staked: 0,
+            role: MemberRole.MEMBER,
+            last_active: block.timestamp,
+            contribution_score: 100
+        });
+
+        member_list.push(member_hash);
+        total_members++;
+        active_members++;
+
+        commitToL1(members[member_hash]);
+        emit MemberRegistered(member_hash, block.timestamp);
+        emit MemberActivated(member_hash);
+        emit GLDEarned(member_hash, 100, "ELIZA vetting completed");
+    }
+
+    /// Award GLD to a member for participation.
+    public U0 awardGLD(U256 member_hash, U64 amount, string reason) {
+        require(members[member_hash].status == MemberStatus.ACTIVE, "Member not active");
+        members[member_hash].gld_balance += amount;
+        members[member_hash].contribution_score += amount;
+        members[member_hash].last_active = block.timestamp;
+
+        emit GLDEarned(member_hash, amount, reason);
+    }
+
+    /// Stake GLD for L2 validation.
+    public U0 stakeGLD(U256 member_hash, U64 amount) {
+        require(members[member_hash].gld_balance >= amount, "Insufficient GLD");
+        require(amount >= 100, "Minimum stake is 100 GLD");
+
+        members[member_hash].gld_balance -= amount;
+        members[member_hash].gld_staked += amount;
+
+        emit GLDStaked(member_hash, amount);
+    }
+
+    /// Slash staked GLD for misbehavior.
+    public U0 slashGLD(U256 member_hash, U64 amount, string reason) {
+        require(members[member_hash].gld_staked >= amount, "Insufficient staked GLD");
+
+        members[member_hash].gld_staked -= amount;
+        // Slashed GLD goes to operations reserve
+
+        commitToL1(members[member_hash]);
+        emit GLDSlashed(member_hash, amount, reason);
+    }
+
+    /// Grant a role to a member.
+    public U0 grantRole(U256 member_hash, MemberRole role) {
+        require(members[member_hash].status == MemberStatus.ACTIVE, "Member not active");
+        members[member_hash].role = role;
+
+        emit RoleGranted(member_hash, role);
+    }
+
+    // ── View Functions ──
+
+    public view Member getMember(U256 member_hash) {
+        return members[member_hash];
+    }
+
+    public view U64 getBalance(U256 member_hash) {
+        return members[member_hash].gld_balance;
+    }
+
+    public view bool isActive(U256 member_hash) {
+        return members[member_hash].status == MemberStatus.ACTIVE;
+    }
+}

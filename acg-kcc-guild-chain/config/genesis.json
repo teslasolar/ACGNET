@@ -1,0 +1,140 @@
+{
+  "chain_id": "acg-kcc-mainnet",
+  "chain_name": "ACG-KCC Guild Chain",
+  "protocol_version": "1.0",
+  "parent": "Konomi Cube Coin v3.0",
+  "genesis_timestamp": "2026-03-15T00:00:00Z",
+
+  "layer_1": {
+    "consensus": "PoA",
+    "block_time_seconds": 60,
+    "block_size_bytes": 1048576,
+    "finality": 1,
+    "authority_quorum": "2/3",
+    "initial_authorities": [
+      {
+        "name": "authority-0",
+        "agent": "VETTING_AGENT",
+        "cube_vertex": "[0,0,0]",
+        "description": "ELIZA coordinator"
+      },
+      {
+        "name": "authority-1",
+        "agent": "CERTIFICATION_AGENT",
+        "cube_vertex": "[999,0,0]",
+        "description": "Certification lifecycle"
+      },
+      {
+        "name": "authority-2",
+        "agent": "PUBLISHING_AGENT",
+        "cube_vertex": "[999,999,0]",
+        "description": "Document publishing"
+      },
+      {
+        "name": "authority-3",
+        "agent": "REFUSAL_AGENT",
+        "cube_vertex": "[0,999,0]",
+        "description": "The guardian — ethical refusal protection"
+      },
+      {
+        "name": "authority-4",
+        "agent": "AUDIT_AGENT",
+        "cube_vertex": "[0,0,999]",
+        "description": "Conformance auditing"
+      }
+    ]
+  },
+
+  "layer_2": {
+    "consensus": "DPoS",
+    "block_time_seconds": 5,
+    "throughput_tps": 1000,
+    "finality_blocks": 2,
+    "checkpoint_frequency": 50,
+    "min_stake_gld": 100
+  },
+
+  "bridge": {
+    "checkpoint_frequency_blocks": 50,
+    "immediate_l1_write": ["EthicalRefusal", "CertificationStateChange", "MembershipStateChange"],
+    "batched": ["VettingCompletion", "AuditSummary", "PackMLSnapshot"],
+    "never_l1": ["RawTranscripts", "AgentChatter", "TempState"]
+  },
+
+  "tokenomics": {
+    "token_name": "GLD",
+    "total_supply": 510510,
+    "distribution": {
+      "founding_members_20pct": 102102,
+      "active_members_40pct": 204204,
+      "operations_reserve_25pct": 127627,
+      "future_growth_15pct": 76577
+    },
+    "staking": {
+      "l2_validator_min": 100,
+      "yield_apr": 0,
+      "slashing": {
+        "downtime_1hr": "warning",
+        "downtime_24hr": 5,
+        "malicious": "full_slash_plus_review"
+      }
+    },
+    "governance": {
+      "proposal_deposit": 50,
+      "voting_power": "1 GLD = 1 vote",
+      "eliza_vetted_multiplier": 1.5,
+      "quorum_standard": 0.20,
+      "quorum_protocol_change": 0.40,
+      "quorum_emergency": 0.10
+    }
+  },
+
+  "cube_agents": {
+    "vertex_agents": 8,
+    "sub_cubes": 512,
+    "agents_per_sub_cube": 4,
+    "micro_agents_per_sub_cube": 8,
+    "total_agents": 6152,
+    "slot_allocation": {
+      "UNIT_01_VETTING":    { "start": 0,   "end": 127, "capacity": 128 },
+      "UNIT_02_CERTIFY":    { "start": 128, "end": 191, "capacity": 64 },
+      "UNIT_03_PUBLISH":    { "start": 192, "end": 255, "capacity": 64 },
+      "UNIT_04_REFUSAL":    { "start": 256, "end": 319, "capacity": 64 },
+      "UNIT_05_AUDIT":      { "start": 320, "end": 383, "capacity": 64 },
+      "UNIT_06_MEMBERSHIP": { "start": 384, "end": 511, "capacity": 128 }
+    }
+  },
+
+  "node_requirements": {
+    "authority_node": {
+      "hardware": "Raspberry Pi 4 (4GB RAM) or equivalent",
+      "storage": "32GB microSD",
+      "network": "Home broadband"
+    },
+    "validator_node": {
+      "hardware": "Raspberry Pi 4 or any modern computer",
+      "storage": "64GB",
+      "stake": "100 GLD minimum"
+    },
+    "full_node": {
+      "hardware": "Any computer made after 2015"
+    },
+    "light_client": {
+      "hardware": "Phone, tablet, browser",
+      "implementation": "WebAssembly"
+    }
+  },
+
+  "compression": {
+    "algorithm": "KCC Hash Compression",
+    "ratio": "15:1",
+    "token_dictionary_size": 65536,
+    "preloaded_tokens": {
+      "manifesto_terms": 200,
+      "packml_states": 17,
+      "acg_ts_clauses": 100,
+      "technical_vocabulary": 2000,
+      "member_metadata": 500
+    }
+  }
+}

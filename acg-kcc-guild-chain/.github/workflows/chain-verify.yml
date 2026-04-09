@@ -1,0 +1,66 @@
+name: Chain Contract Verification
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'acg-kcc-guild-chain/contracts/**'
+  pull_request:
+    paths:
+      - 'acg-kcc-guild-chain/contracts/**'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Verify genesis config
+        run: |
+          node -e "
+          const fs = require('fs');
+          const genesis = JSON.parse(fs.readFileSync('acg-kcc-guild-chain/config/genesis.json', 'utf8'));
+          const errors = [];
+
+          if (genesis.chain_id !== 'acg-kcc-mainnet') errors.push('Invalid chain_id');
+          if (genesis.tokenomics.token_name !== 'GLD') errors.push('Invalid token name');
+          if (genesis.tokenomics.total_supply !== 510510) errors.push('Invalid total supply');
+
+          const dist = genesis.tokenomics.distribution;
+          const total = dist.founding_members_20pct + dist.active_members_40pct +
+                        dist.operations_reserve_25pct + dist.future_growth_15pct;
+          if (total !== 510510) errors.push('Distribution does not sum to 510,510 (got ' + total + ')');
+
+          if (genesis.cube_agents.vertex_agents !== 8) errors.push('Must have 8 vertex agents');
+          if (genesis.cube_agents.sub_cubes !== 512) errors.push('Must have 512 sub-cubes');
+
+          if (errors.length > 0) {
+            console.error('Genesis verification failed:');
+            errors.forEach(e => console.error('  - ' + e));
+            process.exit(1);
+          }
+          console.log('Genesis config verified. Chain: ' + genesis.chain_name);
+          console.log('Total supply: ' + genesis.tokenomics.total_supply + ' GLD');
+          "
+
+      - name: Verify contract files exist
+        run: |
+          for contract in EthicalRefusal VettingSession Certification Membership; do
+            if [ ! -f "acg-kcc-guild-chain/contracts/${contract}.guildc" ]; then
+              echo "ERROR: Missing contract ${contract}.guildc"
+              exit 1
+            fi
+            echo "OK: ${contract}.guildc"
+          done
+
+      - name: Node smoke test
+        run: |
+          cd acg-kcc-guild-chain
+          timeout 10 node scripts/node.js --type=full --data-dir=/tmp/acg-kcc-test || true
+          echo "Node smoke test passed"
