@@ -1,0 +1,38 @@
+name: ACG Network Discovery
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Every hour
+  workflow_dispatch: {}   # Manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout hub repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run discovery
+        run: node scripts/discover.js
+
+      - name: Check for changes
+        id: changes
+        run: |
+          git diff --quiet data/network.json && echo "changed=false" >> "$GITHUB_OUTPUT" || echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Commit updated network state
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "ACG-NET Discovery Bot"
+          git config user.email "acg-net@noreply.github.com"
+          git add data/network.json
+          git commit -m "chore: update network state [ACG-DISCOVER]"
+          git push

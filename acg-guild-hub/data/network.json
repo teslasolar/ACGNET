@@ -1,0 +1,16 @@
+{
+  "acg_protocol": "ACG-DISCOVER-v1",
+  "description": "Aggregated ACG-NET network state — rebuilt hourly by GitHub Actions",
+  "stats": {
+    "total_members": 0,
+    "total_online": 0,
+    "total_posts": 0,
+    "total_achievements": 0,
+    "total_refusals_protected": 0,
+    "total_certifications": 0
+  },
+  "members": [],
+  "leaderboard": [],
+  "content_river": [],
+  "updated": "2026-03-15T12:00:00Z"
+}

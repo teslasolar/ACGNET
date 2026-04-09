@@ -1,0 +1,108 @@
+name: Update Manifest
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'content/**'
+      - 'data/achievements.json'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Scan content and update manifest
+        run: |
+          node -e "
+          const fs = require('fs');
+          const path = require('path');
+
+          // Read current manifest
+          const manifest = JSON.parse(fs.readFileSync('manifest.json', 'utf8'));
+
+          // Scan posts
+          const postsDir = 'content/posts';
+          const posts = [];
+          if (fs.existsSync(postsDir)) {
+            const files = fs.readdirSync(postsDir).filter(f => f.endsWith('.md'));
+            for (const file of files) {
+              const content = fs.readFileSync(path.join(postsDir, file), 'utf8');
+              const frontmatter = content.match(/^---\n([\s\S]*?)\n---/);
+              let title = file.replace(/\.md$/, '');
+              let date = '';
+              let tags = [];
+              if (frontmatter) {
+                const fm = frontmatter[1];
+                const titleMatch = fm.match(/^title:\s*(.+)$/m);
+                const dateMatch = fm.match(/^date:\s*(.+)$/m);
+                const tagsMatch = fm.match(/^tags:\s*\[(.+)\]$/m);
+                if (titleMatch) title = titleMatch[1].trim();
+                if (dateMatch) date = dateMatch[1].trim();
+                if (tagsMatch) tags = tagsMatch[1].split(',').map(t => t.trim());
+              }
+              posts.push({ title, date, tags, file });
+            }
+            posts.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+          }
+
+          // Scan projects
+          const projectsDir = 'content/projects';
+          const projects = [];
+          if (fs.existsSync(projectsDir)) {
+            const files = fs.readdirSync(projectsDir).filter(f => f.endsWith('.md'));
+            for (const file of files) {
+              projects.push({ title: file.replace(/\.md$/, ''), file });
+            }
+          }
+
+          // Scan resources
+          const resourcesDir = 'content/resources';
+          const resources = [];
+          if (fs.existsSync(resourcesDir)) {
+            const files = fs.readdirSync(resourcesDir).filter(f => f.endsWith('.md'));
+            for (const file of files) {
+              resources.push({ title: file.replace(/\.md$/, ''), file });
+            }
+          }
+
+          // Update manifest content
+          manifest.content = { posts, projects, resources };
+
+          // Update stats
+          manifest.stats.publications = posts.length + projects.length;
+
+          // Load achievements
+          if (fs.existsSync('data/achievements.json')) {
+            const achData = JSON.parse(fs.readFileSync('data/achievements.json', 'utf8'));
+            manifest.achievements = achData.unlocked || [];
+          }
+
+          // Update local stats
+          const localStats = {
+            posts_count: posts.length,
+            projects_count: projects.length,
+            resources_count: resources.length,
+            last_updated: new Date().toISOString()
+          };
+          fs.writeFileSync('data/local-stats.json', JSON.stringify(localStats, null, 2));
+
+          // Update timestamp
+          manifest.updated = new Date().toISOString();
+
+          fs.writeFileSync('manifest.json', JSON.stringify(manifest, null, 2));
+          console.log('Manifest updated: ' + posts.length + ' posts, ' + projects.length + ' projects, ' + resources.length + ' resources');
+          "
+
+      - name: Commit updated manifest
+        run: |
+          git config user.name "ACG Member Bot"
+          git config user.email "acg-member@noreply.github.com"
+          git add manifest.json data/local-stats.json
+          git diff --cached --quiet || git commit -m "chore: auto-update manifest from content"
+          git push

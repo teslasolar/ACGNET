@@ -1,0 +1,12 @@
+{
+  "acg_protocol": "ACG-DISCOVER-v1",
+  "description": "Registry of ACG-NET member manifest URLs",
+  "members": [
+    {
+      "handle": "ThomasTheTankEngineer",
+      "manifest_url": "https://thomasthetankengineer.github.io/acg-member/manifest.json",
+      "registered": "2026-03-15"
+    }
+  ],
+  "updated": "2026-03-15T12:00:00Z"
+}

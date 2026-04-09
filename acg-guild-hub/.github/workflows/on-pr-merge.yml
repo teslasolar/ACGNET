@@ -1,0 +1,67 @@
+name: New Member Registration
+
+on:
+  pull_request:
+    types: [closed]
+    paths:
+      - 'data/registry.json'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  register:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout hub repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate new member manifests
+        run: |
+          node -e "
+          const fs = require('fs');
+          const registry = JSON.parse(fs.readFileSync('data/registry.json', 'utf8'));
+          const errors = [];
+          for (const m of registry.members) {
+            if (!m.handle) errors.push('Missing handle');
+            if (!m.manifest_url) errors.push('Missing manifest_url for ' + (m.handle || 'unknown'));
+            if (m.manifest_url && !m.manifest_url.startsWith('https://')) {
+              errors.push('manifest_url must be HTTPS: ' + m.manifest_url);
+            }
+          }
+          if (errors.length > 0) {
+            console.error('Registry validation failed:');
+            errors.forEach(e => console.error('  - ' + e));
+            process.exit(1);
+          }
+          console.log('Registry valid: ' + registry.members.length + ' members.');
+          "
+
+      - name: Run immediate discovery cycle
+        run: node scripts/discover.js
+
+      - name: Commit updated network state
+        run: |
+          git config user.name "ACG-NET Discovery Bot"
+          git config user.email "acg-net@noreply.github.com"
+          git add data/network.json
+          git diff --cached --quiet || git commit -m "chore: new member registered [ACG-DISCOVER]"
+          git push
+
+      - name: Welcome message
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '⚒ **Welcome to ACG-NET!**\n\nYour member page has been registered. The hub will discover your manifest on the next hourly crawl (or it just did). You should appear on the [leaderboard](/) shortly.\n\nThe hub is a router, not a server. Your page is yours. The network is ours.'
+            });

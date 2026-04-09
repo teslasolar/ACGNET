@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Achievements — ACG Member</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Crimson+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    .ach-full-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .ach-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 16px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .ach-card.locked { opacity: 0.3; }
+
+    .ach-card[data-rarity="legendary"] { border-color: var(--rarity-legendary); }
+    .ach-card[data-rarity="epic"]      { border-color: var(--rarity-epic); }
+    .ach-card[data-rarity="rare"]      { border-color: var(--rarity-rare); }
+    .ach-card[data-rarity="uncommon"]  { border-color: var(--rarity-uncommon); }
+
+    .ach-card .ach-icon-big { font-size: 36px; line-height: 1; }
+
+    .ach-card .ach-details .ach-name {
+      font-weight: 700;
+      color: #ffffff;
+      font-size: 14px;
+    }
+
+    .ach-card .ach-details .ach-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    .ach-card .ach-details .ach-rarity {
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    .ach-rarity.legendary { color: var(--rarity-legendary); }
+    .ach-rarity.epic      { color: var(--rarity-epic); }
+    .ach-rarity.rare      { color: var(--rarity-rare); }
+    .ach-rarity.uncommon  { color: var(--rarity-uncommon); }
+    .ach-rarity.common    { color: var(--rarity-common); }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 24px;
+      font-size: 13px;
+    }
+
+    .ach-summary {
+      color: var(--text-dim);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" style="padding-top:32px;padding-bottom:48px">
+    <a class="back-link" href="index.html">&larr; Back to profile</a>
+    <h1 style="font-family:var(--serif);color:#fff;font-size:28px">Achievements</h1>
+    <p class="ach-summary" id="ach-summary">Loading...</p>
+    <div class="ach-full-grid" id="ach-grid"></div>
+  </div>
+
+  <script>
+    (function() {
+      var ALL = {
+        first_steps:      { name: 'First Steps',      icon: '\u{1F463}', desc: 'Forked the template and deployed your member page', rarity: 'common' },
+        the_interview:    { name: 'The Interview',     icon: '\u{1F50D}', desc: 'Passed ELIZA vetting — is the human conscious? yes.', rarity: 'common' },
+        wordsmith:        { name: 'Wordsmith',         icon: '\u270D\uFE0F', desc: 'Published your first post', rarity: 'common' },
+        prolific:         { name: 'Prolific',          icon: '\u{1F4DA}', desc: 'Published 10 posts', rarity: 'uncommon' },
+        toolmaker:        { name: 'Toolmaker',         icon: '\u{1F527}', desc: 'Contributed to a guild tool (ELIZA, Guild Ops, etc.)', rarity: 'rare' },
+        white_paper:      { name: 'White Paper',       icon: '\u{1F4DC}', desc: 'Co-authored a published ACG white paper', rarity: 'rare' },
+        spec_writer:      { name: 'Spec Writer',       icon: '\u{1F4D0}', desc: 'Contributed to a technical specification', rarity: 'epic' },
+        gate_keeper:      { name: 'Gate Keeper',       icon: '\u{1F6AA}', desc: 'Served as reviewer for 5+ publications', rarity: 'uncommon' },
+        the_auditor:      { name: 'The Auditor',       icon: '\u{1F50E}', desc: 'Completed a conformance audit', rarity: 'rare' },
+        i_said_no:        { name: 'I Said No',         icon: '\u270B', desc: 'Filed an ethical refusal. Principle 6 in action.', rarity: 'rare' },
+        guardian:          { name: 'Guardian',          icon: '\u{1F6E1}\uFE0F', desc: 'Served as independent reviewer on an ethical refusal', rarity: 'epic' },
+        shield_wall:      { name: 'Shield Wall',       icon: '\u2694\uFE0F', desc: 'Supported a colleague\'s ethical refusal publicly', rarity: 'epic' },
+        regular:          { name: 'Regular',           icon: '\u2615', desc: 'Attended 10 guild sessions', rarity: 'common' },
+        mentor:           { name: 'Mentor',            icon: '\u{1F393}', desc: 'Mentored 3 new members through onboarding', rarity: 'uncommon' },
+        recruiter:        { name: 'Recruiter',         icon: '\u{1F4E2}', desc: 'Recruited 5 new members who passed vetting', rarity: 'uncommon' },
+        founding_hammer:  { name: 'Founding Hammer',   icon: '\u2692\uFE0F', desc: 'Was there at the beginning. Signed the original manifesto.', rarity: 'legendary' },
+        galaxy_brain:     { name: 'Galaxy Brain',      icon: '\u{1F30C}', desc: 'Reached Galaxy Brain tier. Thomas would be proud.', rarity: 'legendary' },
+        equation_breaker: { name: 'Equation Breaker',  icon: '\u{1F4A5}', desc: 'Demonstrated breaking the Harm Equation in a real-world scenario, documented and verified.', rarity: 'legendary' },
+        chain_runner:     { name: 'Chain Runner',      icon: '\u{1F517}', desc: 'Running an ACG-KCC node on a Raspberry Pi', rarity: 'rare' }
+      };
+
+      var RARITY_ORDER = ['legendary', 'epic', 'rare', 'uncommon', 'common'];
+
+      fetch('manifest.json')
+        .then(function(r) { return r.json(); })
+        .then(function(manifest) {
+          var unlocked = (manifest.achievements || []).map(function(a) { return a.id || a; });
+          var total = Object.keys(ALL).length;
+          document.getElementById('ach-summary').textContent =
+            unlocked.length + ' / ' + total + ' unlocked';
+
+          // Sort: unlocked first, then by rarity
+          var keys = Object.keys(ALL);
+          keys.sort(function(a, b) {
+            var aUnlocked = unlocked.indexOf(a) !== -1 ? 0 : 1;
+            var bUnlocked = unlocked.indexOf(b) !== -1 ? 0 : 1;
+            if (aUnlocked !== bUnlocked) return aUnlocked - bUnlocked;
+            return RARITY_ORDER.indexOf(ALL[a].rarity) - RARITY_ORDER.indexOf(ALL[b].rarity);
+          });
+
+          var html = '';
+          keys.forEach(function(id) {
+            var a = ALL[id];
+            var isUnlocked = unlocked.indexOf(id) !== -1;
+            html += '<div class="ach-card ' + (isUnlocked ? '' : 'locked') + '" data-rarity="' + a.rarity + '">' +
+              '<div class="ach-icon-big">' + a.icon + '</div>' +
+              '<div class="ach-details">' +
+                '<div class="ach-name">' + esc(a.name) + '</div>' +
+                '<div class="ach-desc">' + esc(a.desc) + '</div>' +
+                '<div class="ach-rarity ' + a.rarity + '">' + a.rarity + '</div>' +
+              '</div></div>';
+          });
+          document.getElementById('ach-grid').innerHTML = html;
+        });
+
+      function esc(s) {
+        return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      }
+    })();
+  </script>
+</body>
+</html>

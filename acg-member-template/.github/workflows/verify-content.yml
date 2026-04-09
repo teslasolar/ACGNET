@@ -1,0 +1,74 @@
+name: Content Validation
+
+on:
+  pull_request:
+    paths:
+      - 'content/**'
+      - 'manifest.json'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate manifest schema
+        run: |
+          node -e "
+          const fs = require('fs');
+          const manifest = JSON.parse(fs.readFileSync('manifest.json', 'utf8'));
+          const errors = [];
+
+          if (manifest.acg_protocol !== 'ACG-DISCOVER-v1') {
+            errors.push('acg_protocol must be ACG-DISCOVER-v1');
+          }
+          if (!manifest.member) errors.push('Missing member object');
+          if (!manifest.member.handle) errors.push('Missing member.handle');
+          if (!manifest.member.github) errors.push('Missing member.github');
+          if (!manifest.member.site_url) errors.push('Missing member.site_url');
+          if (!manifest.stats) errors.push('Missing stats object');
+          if (!manifest.content) errors.push('Missing content object');
+
+          if (errors.length > 0) {
+            console.error('Manifest validation failed:');
+            errors.forEach(e => console.error('  - ' + e));
+            process.exit(1);
+          }
+          console.log('Manifest schema valid.');
+          "
+
+      - name: Validate markdown frontmatter
+        run: |
+          node -e "
+          const fs = require('fs');
+          const path = require('path');
+          const errors = [];
+          const postsDir = 'content/posts';
+
+          if (fs.existsSync(postsDir)) {
+            const files = fs.readdirSync(postsDir).filter(f => f.endsWith('.md'));
+            for (const file of files) {
+              const content = fs.readFileSync(path.join(postsDir, file), 'utf8');
+              if (!content.startsWith('---')) {
+                errors.push(file + ': missing frontmatter (must start with ---)');
+                continue;
+              }
+              const fm = content.match(/^---\n([\s\S]*?)\n---/);
+              if (!fm) {
+                errors.push(file + ': malformed frontmatter');
+                continue;
+              }
+              const body = fm[1];
+              if (!body.match(/^title:/m)) errors.push(file + ': missing title in frontmatter');
+              if (!body.match(/^date:/m)) errors.push(file + ': missing date in frontmatter');
+            }
+          }
+
+          if (errors.length > 0) {
+            console.error('Content validation failed:');
+            errors.forEach(e => console.error('  - ' + e));
+            process.exit(1);
+          }
+          console.log('All content validated.');
+          "

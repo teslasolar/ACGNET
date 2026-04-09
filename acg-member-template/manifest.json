@@ -1,0 +1,26 @@
+{
+  "acg_protocol": "ACG-DISCOVER-v1",
+  "member": {
+    "handle": "YourHandle",
+    "github": "YourGitHubUsername",
+    "joined": "2026-01-01",
+    "tagline": "Your tagline here",
+    "avatar_url": "https://yourusername.github.io/acg-member/assets/avatar.png",
+    "site_url": "https://yourusername.github.io/acg-member/"
+  },
+  "achievements": [],
+  "stats": {
+    "contributions": 0,
+    "publications": 0,
+    "vettings_passed": 0,
+    "refusals_filed": 0,
+    "audits_served": 0,
+    "sessions_attended": 0
+  },
+  "content": {
+    "posts": [],
+    "projects": [],
+    "resources": []
+  },
+  "updated": "2026-01-01T00:00:00Z"
+}

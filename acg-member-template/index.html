@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ACG Member</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Crimson+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div class="container">
+
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div class="guild-badge">&hamilt; ACG MEMBER &hamilt;</div>
+      <img class="avatar" id="avatar" src="assets/avatar.png" alt="avatar">
+      <h1 id="member-handle">Loading...</h1>
+      <div class="tagline" id="member-tagline"></div>
+      <div class="tier-badge" id="tier-badge">...</div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar" id="stats-bar">
+      <div class="stat-cell"><div class="value" id="stat-rank">-</div><div class="label">Rank</div></div>
+      <div class="stat-cell"><div class="value" id="stat-tier">-</div><div class="label">Tier</div></div>
+      <div class="stat-cell"><div class="value" id="stat-achievements">-</div><div class="label">Achievements</div></div>
+      <div class="stat-cell"><div class="value" id="stat-score">-</div><div class="label">Score</div></div>
+      <div class="stat-cell"><div class="value" id="stat-since">-</div><div class="label">Member Since</div></div>
+    </div>
+
+    <!-- Achievements -->
+    <section>
+      <h2>Achievements</h2>
+      <div class="achievement-grid" id="achievement-grid">
+        <!-- Populated by JS -->
+      </div>
+      <p style="margin-top:8px"><a href="achievements.html">View all achievements &rarr;</a></p>
+    </section>
+
+    <!-- Content Feed -->
+    <section>
+      <h2>Posts</h2>
+      <div id="content-feed">
+        <!-- Populated by JS from manifest -->
+      </div>
+    </section>
+
+    <!-- Network Widget -->
+    <section>
+      <h2>Guild Network</h2>
+      <div class="network-widget" id="network-widget">
+        <h3>ACG-NET</h3>
+        <div class="nw-stat"><span class="nw-label">My Rank</span><span class="nw-value" id="nw-rank">-</span></div>
+        <div class="nw-stat"><span class="nw-label">Total Members</span><span class="nw-value" id="nw-members">-</span></div>
+        <div class="nw-stat"><span class="nw-label">Total Posts</span><span class="nw-value" id="nw-posts">-</span></div>
+        <div class="nw-stat"><span class="nw-label">Achievements Unlocked</span><span class="nw-value" id="nw-achievements">-</span></div>
+        <p style="margin-top:12px;font-size:11px;color:var(--text-dim)">
+          <a href="https://aicraftspeopleguild.github.io">View full leaderboard on ACG-NET hub &rarr;</a>
+        </p>
+      </div>
+    </section>
+
+    <footer>
+      <div class="manifesto-line" id="manifesto-line">
+        "The guild site is a hub, not a host. Your page is yours. The network is ours."
+      </div>
+      <div>&hamilt; AI Craftspeople Guild &mdash; <a href="https://aicraftspeopleguild.github.io">ACG-NET</a></div>
+    </footer>
+  </div>
+
+  <script>
+    (function() {
+      // ─── CONFIG ───
+      // The hub URL — change if your guild hub is hosted elsewhere
+      var HUB_URL = 'https://aicraftspeopleguild.github.io';
+
+      // All available achievements (id -> definition)
+      var ALL_ACHIEVEMENTS = {
+        first_steps:      { name: 'First Steps',      icon: '\u{1F463}', desc: 'Forked the template and deployed your member page', rarity: 'common' },
+        the_interview:    { name: 'The Interview',     icon: '\u{1F50D}', desc: 'Passed ELIZA vetting', rarity: 'common' },
+        wordsmith:        { name: 'Wordsmith',         icon: '\u270D\uFE0F', desc: 'Published your first post', rarity: 'common' },
+        prolific:         { name: 'Prolific',          icon: '\u{1F4DA}', desc: 'Published 10 posts', rarity: 'uncommon' },
+        toolmaker:        { name: 'Toolmaker',         icon: '\u{1F527}', desc: 'Contributed to a guild tool', rarity: 'rare' },
+        white_paper:      { name: 'White Paper',       icon: '\u{1F4DC}', desc: 'Co-authored a published ACG white paper', rarity: 'rare' },
+        spec_writer:      { name: 'Spec Writer',       icon: '\u{1F4D0}', desc: 'Contributed to a technical spec', rarity: 'epic' },
+        gate_keeper:      { name: 'Gate Keeper',       icon: '\u{1F6AA}', desc: 'Served as reviewer for 5+ pubs', rarity: 'uncommon' },
+        the_auditor:      { name: 'The Auditor',       icon: '\u{1F50E}', desc: 'Completed a conformance audit', rarity: 'rare' },
+        i_said_no:        { name: 'I Said No',         icon: '\u270B', desc: 'Filed an ethical refusal', rarity: 'rare' },
+        guardian:          { name: 'Guardian',          icon: '\u{1F6E1}\uFE0F', desc: 'Served as independent reviewer on a refusal', rarity: 'epic' },
+        shield_wall:      { name: 'Shield Wall',       icon: '\u2694\uFE0F', desc: 'Supported a colleague\'s ethical refusal', rarity: 'epic' },
+        regular:          { name: 'Regular',           icon: '\u2615', desc: 'Attended 10 guild sessions', rarity: 'common' },
+        mentor:           { name: 'Mentor',            icon: '\u{1F393}', desc: 'Mentored 3 new members', rarity: 'uncommon' },
+        recruiter:        { name: 'Recruiter',         icon: '\u{1F4E2}', desc: 'Recruited 5 members who passed vetting', rarity: 'uncommon' },
+        founding_hammer:  { name: 'Founding Hammer',   icon: '\u2692\uFE0F', desc: 'Signed the original manifesto', rarity: 'legendary' },
+        galaxy_brain:     { name: 'Galaxy Brain',      icon: '\u{1F30C}', desc: 'Reached Galaxy Brain tier', rarity: 'legendary' },
+        equation_breaker: { name: 'Equation Breaker',  icon: '\u{1F4A5}', desc: 'Broke the Harm Equation in a real scenario', rarity: 'legendary' },
+        chain_runner:     { name: 'Chain Runner',      icon: '\u{1F517}', desc: 'Running an ACG-KCC node', rarity: 'rare' }
+      };
+
+      var POINT_VALUES = {
+        sessions_attended: 10,
+        vettings_passed:   100,
+        publications:      50,
+        contributions:     400,
+        refusals_filed:    200,
+        audits_served:     500
+      };
+
+      var BRAIN_TIERS = [
+        { name: 'Smooth Brain',       emoji: '\u{1F9E0}',           min: 0 },
+        { name: 'Wrinkled Brain',     emoji: '\u{1F9E0}\u2728',     min: 100 },
+        { name: 'Big Brain',          emoji: '\u{1F9E0}\u{1F525}',  min: 500 },
+        { name: 'Galaxy Brain',       emoji: '\u{1F9E0}\u{1F30C}',  min: 1500 },
+        { name: 'Cosmic Brain',       emoji: '\u{1F9E0}\u{1FA90}',  min: 5000 },
+        { name: 'Transcendent Brain', emoji: '\u{1F9E0}\u26A1',     min: 10000 }
+      ];
+
+      // ─── Load manifest.json ───
+      fetch('manifest.json')
+        .then(function(r) { return r.json(); })
+        .then(function(manifest) { renderProfile(manifest); })
+        .catch(function() { document.getElementById('member-handle').textContent = 'Error loading manifest'; });
+
+      function renderProfile(manifest) {
+        var m = manifest.member;
+        var stats = manifest.stats;
+
+        // Header
+        document.title = m.handle + ' — ACG Member';
+        document.getElementById('member-handle').textContent = m.handle;
+        document.getElementById('member-tagline').textContent = m.tagline || '';
+        if (m.avatar_url) document.getElementById('avatar').src = m.avatar_url;
+
+        // Score & tier
+        var score = computeScore(stats);
+        var tier = getTier(score);
+        document.getElementById('tier-badge').textContent = tier.emoji + ' ' + tier.name;
+        document.getElementById('tier-badge').style.borderColor = tier.color || 'var(--accent-dim)';
+
+        // Stats
+        setText('stat-tier', tier.emoji);
+        setText('stat-achievements', manifest.achievements ? manifest.achievements.length : 0);
+        setText('stat-score', score.toLocaleString());
+        setText('stat-since', m.joined || '-');
+
+        // Achievements grid
+        var grid = document.getElementById('achievement-grid');
+        var unlockedIds = (manifest.achievements || []).map(function(a) { return a.id || a; });
+        var html = '';
+        var keys = Object.keys(ALL_ACHIEVEMENTS);
+        keys.forEach(function(id) {
+          var a = ALL_ACHIEVEMENTS[id];
+          var unlocked = unlockedIds.indexOf(id) !== -1;
+          html += '<div class="ach-slot ' + (unlocked ? '' : 'locked') + '" data-rarity="' + a.rarity + '">' +
+            a.icon +
+            '<div class="tooltip">' + esc(a.name) + (unlocked ? '' : ' (locked)') + '</div>' +
+            '</div>';
+        });
+        grid.innerHTML = html;
+
+        // Content feed
+        var feed = document.getElementById('content-feed');
+        var posts = manifest.content && manifest.content.posts ? manifest.content.posts : [];
+        if (posts.length === 0) {
+          feed.innerHTML = '<p style="color:var(--text-dim);font-size:12px">No posts yet. Add markdown files to <code>content/posts/</code>.</p>';
+        } else {
+          var fhtml = '';
+          posts.forEach(function(p) {
+            fhtml += '<div class="post-item">' +
+              '<div class="post-title">' + (p.url ? '<a href="' + esc(p.url) + '">' + esc(p.title) + '</a>' : esc(p.title || 'Untitled')) + '</div>' +
+              '<div class="post-date">' + (p.date || '') + '</div></div>';
+          });
+          feed.innerHTML = fhtml;
+        }
+
+        // ─── Network widget (backfeed from hub) ───
+        var myGithub = m.github;
+        fetch(HUB_URL + '/data/network.json')
+          .then(function(r) { return r.json(); })
+          .then(function(network) {
+            var me = network.members.find(function(nm) { return nm.github === myGithub || nm.handle === m.handle; });
+            setText('nw-rank', me ? '#' + me.rank : '-');
+            setText('stat-rank', me ? '#' + me.rank : '-');
+            setText('nw-members', network.stats.total_members);
+            setText('nw-posts', network.stats.total_posts);
+            setText('nw-achievements', network.stats.total_achievements);
+          })
+          .catch(function() {
+            setText('nw-rank', 'offline');
+            setText('nw-members', '?');
+            setText('nw-posts', '?');
+            setText('nw-achievements', '?');
+          });
+      }
+
+      function computeScore(stats) {
+        var score = 0;
+        for (var key in POINT_VALUES) {
+          score += (stats[key] || 0) * POINT_VALUES[key];
+        }
+        return score;
+      }
+
+      function getTier(score) {
+        var tier = BRAIN_TIERS[0];
+        for (var i = 0; i < BRAIN_TIERS.length; i++) {
+          if (score >= BRAIN_TIERS[i].min) tier = BRAIN_TIERS[i];
+        }
+        return tier;
+      }
+
+      function setText(id, val) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = val;
+      }
+
+      function esc(s) {
+        if (!s) return '';
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      }
+    })();
+  </script>
+</body>
+</html>
