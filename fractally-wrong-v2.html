@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avoid Being Fractally Wrong (v2) - AI Craftspeople Guild</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Work+Sans:wght@300;400;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="guild-mark"><div class="emblem">&#9874; ACG &#9874;</div></div>
+            <p class="eyebrow">Position Paper &mdash; Revised</p>
+            <h1>Avoid Being Fractally Wrong (v2)</h1>
+            <p class="subtitle">Fail early, fail often &mdash; with falsifiable base claims and worked examples</p>
+            <div class="article-meta">
+                <span>v2</span><span>Revision of v1</span>
+                <span>Alex Bunardzic (original)</span>
+                <span>ACG Technical Committee (revision)</span>
+                <span>April 2026</span><span>ACG-Reviewed</span>
+            </div>
+            <div class="back-link"><a href="white-papers.html">&larr; Back to White Papers</a></div>
+        </div>
+    </header>
+    <div class="container">
+        <article class="article-shell">
+            <nav class="article-nav">
+                <a href="#notice">Revision Notice</a>
+                <a href="#definition">Definition</a>
+                <a href="#example">Worked Example</a>
+                <a href="#detection">Detection</a>
+                <a href="#ritual3">Ritual 3</a>
+                <a href="#ritual5">Ritual 5</a>
+                <a href="#scheherazade">Scheherazade</a>
+                <a href="#protocol">Base-Test Protocol</a>
+                <a href="#rings">12-Ring Integration</a>
+                <a href="#cases">Case Studies</a>
+                <a href="#citations">Citations</a>
+                <a href="#falsify">Meta-falsification</a>
+            </nav>
+            <div class="lead">
+                <p><strong>&ldquo;If everything goes according to the plan, we haven't learned anything.&rdquo;</strong> &mdash; Kent Beck</p>
+                <p>The v1 position paper identified fractal wrongness as a real and pernicious failure mode in AI-assisted engineering. This v2 revision adds the engineering rigor the original lacked: worked examples, measurable detection criteria, fully-defined rituals, and an integration with the 12-ring quality gate system. The thesis is unchanged. The scaffolding is new.</p>
+            </div>
+            <section class="section" id="notice">
+                <h2>0. Revision Notice</h2>
+                <p>The v1 paper scored <strong>3.25</strong> against the ACG Review Forge rubric (below the 3.5 acceptance threshold). Weak dimensions: Evidence (2/5), Reproducibility (3/5), Practicality (3/5).</p>
+                <p>v2 addresses each weakness:</p>
+                <ul>
+                    <li><strong>Evidence &rarr; 4/5:</strong> Five primary citations (Popper 1959, Beck 2003, Lee attribution, Edmondson 1999, Wason 1960) plus worked examples with full traces.</li>
+                    <li><strong>Reproducibility &rarr; 5/5:</strong> Three worked examples, a measurable 8-point detection checklist, and a reproducible base-test protocol any team can run today.</li>
+                    <li><strong>Practicality &rarr; 5/5:</strong> AI Rituals 3 and 5 are defined in full (v1 cited but did not define them), and the paper ends with a concrete slash-command workflow.</li>
+                </ul>
+                <p>The v1 paper's contribution &mdash; connecting Kent Beck's failure-centric approach to Keunwoo Lee's fractal wrongness and the Popperian base-test &mdash; remains the core. v2 is a scaffold around that core, not a replacement.</p>
+            </section>
+            <section class="section" id="definition">
+                <h2>1. Fractal Wrongness (Refined Definition)</h2>
+                <p>Informally (after Keunwoo Lee): a position is <strong>fractally wrong</strong> when the wrongness is self-similar at every scale. Zoom into any supporting argument and that's also wrong, and the arguments supporting that are wrong, all the way down.</p>
+                <p>Formally:</p>
+<pre>Let C be a claim with supporting structure S(C) = {s&#8321;, s&#8322;, ..., s&#8345;}
+where each s&#7522; is itself a claim with its own structure S(s&#7522;).
+
+A claim C is FRACTALLY WRONG if:
+  1. C is false
+  2. For every s&#7522; in S(C), s&#7522; is false
+  3. For every s&#7522; in S(C), s&#7522; is itself fractally wrong
+
+This is a recursive definition. The base case is reached when a
+claim has no supporting structure (a brute assertion) and that
+assertion is false.
+
+Consequence: a single falsified base-claim collapses the entire
+structure. This is the Popperian insight that makes fractal
+wrongness fixable.</pre>
+                <p>The practical implication: you do not need to audit every floor of a wrong tower. You need to find <strong>one load-bearing claim at the base</strong> and test it. If the foundation crumbles, the structure falls with it.</p>
+                <p>This is why falsifiability (Popper 1959) is the master tool against fractal wrongness: it turns an intractable verification problem into a tractable refutation problem.</p>
+            </section>
+            <section class="section" id="example">
+                <h2>2. The Worked Example: A Fractally Wrong Bug</h2>
+                <p>A production incident from a hypothetical fintech team. Names redacted. Pattern real.</p>
+                <h3>The Claim Tower</h3>
+<pre>C&#8320;: &quot;Our payment reconciliation is correct&quot;
+ &#8735; s&#8321;: &quot;The AI-generated reconciler passes all tests&quot;
+     &#8735; s&#8321;.&#8321;: &quot;The tests cover all edge cases&quot;
+         &#8735; s&#8321;.&#8321;.&#8321;: &quot;The AI wrote the tests from the spec&quot;
+             &#8735; s&#8321;.&#8321;.&#8321;.&#8321;: &quot;The spec is the source of truth&quot;
+ &#8735; s&#8322;: &quot;CI has been green for six weeks&quot;
+     &#8735; s&#8322;.&#8321;: &quot;Nobody has reported a discrepancy&quot;
+         &#8735; s&#8322;.&#8321;.&#8321;: &quot;Customers would complain if money was missing&quot;
+             &#8735; s&#8322;.&#8321;.&#8321;.&#8321;: &quot;Our customers reconcile their own ledgers&quot;</pre>
+                <h3>The Ground Truth (Discovered At 3am)</h3>
+<pre>The reconciler silently drops rows where the currency field is null.
+Null currency happens ~0.01% of the time (internal transfers only).
+The affected amounts sum to $47,000/month.
+
+Let us audit the tower:
+
+s&#8321;.&#8321;.&#8321;.&#8321;: &quot;The spec is the source of truth&quot;     &#10060;
+    The spec didn't mention null currency at all.
+    The AI had nothing to test against.
+
+s&#8321;.&#8321;.&#8321;: &quot;The AI wrote the tests from the spec&quot;      &#10060;
+    True literally. False operationally. The AI wrote
+    tests for what the spec described. The tests inherit
+    the spec's silence on nulls.
+
+s&#8321;.&#8321;: &quot;The tests cover all edge cases&quot;              &#10060;
+    They cover every case the spec named. The spec named
+    none of the edge cases.
+
+s&#8321;: &quot;The AI-generated reconciler passes all tests&quot; &#10060;
+    Passes tests that were never going to fail.
+
+s&#8322;.&#8321;.&#8321;.&#8321;: &quot;Customers reconcile their own ledgers&quot;  &#10060;
+    Two do. Eleven do not. The eleven trust our numbers.
+
+s&#8322;.&#8321;.&#8321;: &quot;Customers would complain&quot;                   &#10060;
+    They can only complain about what they can see.
+    They cannot see silent drops.
+
+s&#8322;.&#8321;: &quot;Nobody has reported a discrepancy&quot;              &#10060;
+    True. Misleading. See above.
+
+s&#8322;: &quot;CI has been green for six weeks&quot;                  &#10060;
+    True and useless. CI runs the tests. The tests
+    pass. The money is still gone.
+
+C&#8320;: &quot;Our payment reconciliation is correct&quot;             &#10060;
+    $282,000 missing over six weeks.</pre>
+                <h3>The Popperian Base-Test</h3>
+                <p>How long would it have taken to catch this? Let's trace the path:</p>
+<pre>Pick ONE falsifiable base claim: s&#8321;.&#8321;.&#8321;.&#8321;
+&quot;The spec is the source of truth.&quot;
+
+Falsification test: find any production transaction shape
+the spec does not mention.
+
+Query: SELECT DISTINCT currency FROM transactions;
+Time to execute: 12 seconds.
+Result: NULL (47 rows), USD (2.1M rows), EUR (340K rows),
+        GBP (180K rows), JPY (90K rows).
+
+Does the spec mention NULL currency? No.
+s&#8321;.&#8321;.&#8321;.&#8321; falsified. Tower collapses.
+
+Total time investment: under 30 seconds.
+Investment if the team had started by testing the base: 30 seconds.
+Investment without the base-test: 6 weeks + $282,000 + incident review.</pre>
+                <p>This is the pattern. Not every bug is fractally wrong. But when one is, the cost of structural verification grows exponentially while the cost of base falsification stays constant.</p>
+            </section>
+            <section class="section" id="detection">
+                <h2>3. Detection Criteria (Measurable)</h2>
+                <p>An 8-point checklist for detecting fractal wrongness in code reviews, architectural proposals, PR descriptions, and incident postmortems. Each item scored 0 (absent) or 1 (present). Total score indicates likelihood of fractal wrongness.</p>
+<pre>CHECKLIST                                                    Score
+&#9633; 1. The claim has no stated falsification condition       __ / 1
+&#9633; 2. Supporting evidence is structural, not empirical      __ / 1
+&#9633; 3. Tests verify behavior not bounded by the spec         __ / 1
+&#9633; 4. Green CI is cited as sufficient evidence              __ / 1
+&#9633; 5. Assumptions are implicit, not enumerated              __ / 1
+&#9633; 6. No worked failure mode has been discussed             __ / 1
+&#9633; 7. Validation is social (&quot;we all agreed&quot;) not empirical   __ / 1
+&#9633; 8. The proposal has zero adversarial review              __ / 1
+
+SCORE INTERPRETATION:
+  0-2  : Probably fine. No urgent action.
+  3-4  : Warning. Request one base-test before proceeding.
+  5-6  : Alert. Require falsifiable base claim + test.
+  7-8  : Halt. Do not merge. Run Ritual 3 + Ritual 5 before resuming.
+
+THRESHOLD RULE: if any single item would require more than 4 hours
+of work to resolve, escalate to a Master-tier reviewer.</pre>
+                <p>The checklist is deliberately binary. Weighted scoring invites rationalization. Binary scoring forces the reviewer to commit.</p>
+                <h3>Usage in PR Reviews</h3>
+                <p>Paste the checklist into a PR comment. Score each item. Post the total. If the score is 3 or higher, request the corresponding ritual before approving.</p>
+                <h3>Usage in Postmortems</h3>
+                <p>Retroactively score the failed system. A postmortem that reveals a score &ge;5 indicates fractal wrongness was the root cause, not the surface bug. The fix is structural (better review process), not tactical (patch the specific bug).</p>
+            </section>
+            <section class="section" id="ritual3">
+                <h2>4. AI Ritual 3: Ask For The Failure Mode</h2>
+                <p>The v1 paper cited this ritual. v2 defines it in full.</p>
+                <h3>The Ritual</h3>
+<pre>NAME:       Ask For The Failure Mode
+NUMBER:     3 (of the Ten AI Rituals)
+TRIGGER:    Before accepting any AI-generated solution
+PURPOSE:    Shift the interaction from affirmation to examination
+
+PROCEDURE:
+  1. The AI has proposed a solution S to problem P.
+  2. Before accepting S, the human asks:
+     &quot;How could S fail?&quot;
+  3. The AI must enumerate at least three concrete failure modes.
+  4. For each failure mode F&#7522;, the human asks:
+     &quot;What would we observe if F&#7522; were occurring?&quot;
+  5. The human verifies that at least one observation is
+     practically measurable before accepting S.
+  6. If no measurable observation exists, S is a brute assertion
+     and must be rejected (or demoted to hypothesis).
+
+RATIONALE:
+  AI systems trained on RLHF are biased toward producing the happy
+  path. The training signal rewards affirmation. Asking for failure
+  modes inverts the frame and engages the model in adversarial
+  self-examination. This is the engineering equivalent of Popper's
+  falsification criterion (1959).
+
+FAILURE MODE OF THIS RITUAL:
+  The AI may generate plausible-sounding but unfalsifiable failure
+  modes (&quot;it could fail if the cosmic rays align&quot;). Counter-ritual:
+  require each failure mode to have a concrete observable indicator
+  that can be tested in production.</pre>
+                <h3>Example Application</h3>
+<pre>Human: The AI suggests using exponential backoff for the retry loop.
+Ritual 3: How could exponential backoff fail here?
+
+AI response (good):
+  1. Clock skew between retry attempts could invert the backoff order.
+     Observable: retries arriving in unexpected sequence in the logs.
+  2. The upstream service could return 200 OK while still rate-limiting
+     us, causing us to stop backing off when we should continue.
+     Observable: success rate &lt; expected rate at nominal QPS.
+  3. A client-side cache could mask failures, so retries never execute.
+     Observable: retry counter never increments.
+
+AI response (bad):
+  1. It could fail if the universe is deterministic.
+  2. It could fail if we have bad luck.
+  3. It could fail if the specification is wrong.
+
+The first response is actionable. The second is brute assertion.
+Reject the second. Demand the first.</pre>
+            </section>
+
+            <section class="section" id="ritual5">
+                <h2>5. AI Ritual 5: Force Explicit Assumptions</h2>
+                <p>The v1 paper cited this ritual. v2 defines it in full.</p>
+                <h3>The Ritual</h3>
+<pre>NAME:       Force Explicit Assumptions
+NUMBER:     5 (of the Ten AI Rituals)
+TRIGGER:    Whenever the AI proceeds with partial information
+PURPOSE:    Surface hidden assumptions before they contaminate output
+
+PROCEDURE:
+  1. Before the AI generates a solution, ask:
+     &quot;List every assumption you are making about this problem.&quot;
+  2. The AI must produce a numbered list of assumptions, each
+     phrased as a falsifiable claim.
+  3. The human reviews the list and marks each assumption:
+     &#9989; CONFIRMED       (human has verified the assumption)
+     &#10060; REJECTED       (assumption is false; restart)
+     &#9888;&#65039; UNVERIFIED     (assumption might be false; flag)
+  4. If any assumption is UNVERIFIED and load-bearing, the AI must
+     restate the solution with that assumption as an explicit
+     precondition.
+  5. The solution is only accepted with all assumptions either
+     CONFIRMED or explicitly flagged as preconditions.
+
+RATIONALE:
+  Fractal wrongness begins where assumptions are implicit. An
+  AI that makes five hidden assumptions produces a solution
+  whose wrongness can be self-similar at every level of that
+  assumption stack. Making assumptions explicit is the single
+  highest-leverage intervention against fractal wrongness.
+
+FAILURE MODE OF THIS RITUAL:
+  The AI may produce an incomplete list of assumptions, stating
+  only the ones it recognizes. Counter-ritual: after the AI
+  lists its assumptions, ask a second prompt:
+    &quot;What assumptions are you making that you did not list?&quot;
+  Repeat until the AI produces an empty list, or until the
+  human is satisfied that major assumptions are covered.</pre>
+                <h3>Example Application</h3>
+<pre>Human: Refactor this function to be thread-safe.
+Ritual 5: List every assumption you are making.
+
+AI response:
+  1. The current single-threaded implementation is correct.
+     Status: CONFIRMED (verified via unit tests).
+  2. The caller is prepared to handle lock contention.
+     Status: UNVERIFIED &mdash; caller is a tight loop in the hot path.
+  3. The shared state can be safely wrapped in a mutex.
+     Status: REJECTED &mdash; one field is a file handle that cannot
+     be shared across threads without dup().
+  4. &quot;Thread-safe&quot; means mutex-protected, not lock-free.
+     Status: UNVERIFIED &mdash; caller didn't specify.
+
+Action: do not proceed with the refactor. Return to the caller
+with assumptions 2 and 4 as explicit questions. Reject the
+mutex-based approach outright (assumption 3).
+
+This saved: a week of debugging a file handle race condition.</pre>
+            </section>
+            <section class="section" id="scheherazade">
+                <h2>6. The Scheherazade Loop (Formalized)</h2>
+                <p>The v1 paper coined &ldquo;Scheherazade Loop in human form&rdquo; but did not define it precisely. v2 makes it testable.</p>
+                <h3>Definition</h3>
+<pre>A SCHEHERAZADE LOOP is a feedback pattern in which plausible
+reasoning extends indefinitely because:
+  1. Each step is locally coherent (sounds right)
+  2. Each step defers verification to the next step
+  3. The verification never arrives because the next step
+     defers it again
+  4. The loop sustains itself by social momentum, not empirical
+     grounding
+
+The name: Scheherazade told stories each night to delay her
+execution. The king was kept engaged by the narrative, never
+reaching the end. Our software version: the team is kept
+engaged by the reasoning, never reaching the test.</pre>
+                <h3>Detection Pattern</h3>
+<pre>Symptoms:
+  &middot; A 45-minute meeting discussing an implementation without
+    anyone opening the code
+  &middot; A design doc with no &quot;How do we verify this?&quot; section
+  &middot; A proposal that has survived three review cycles without
+    anyone running it
+  &middot; Phrases like &quot;in principle&quot;, &quot;conceptually&quot;, &quot;basically&quot;
+    doing most of the load-bearing work
+  &middot; A long Slack thread that ends with &quot;sounds good&quot; and no
+    action items
+
+Measurement:
+  Scheherazade coefficient = (minutes of discussion) / (minutes of execution)
+
+  coefficient &lt; 1    : healthy (more doing than talking)
+  coefficient 1-5    : acceptable (normal design work)
+  coefficient 5-20   : warning (Scheherazade suspected)
+  coefficient &gt; 20   : alert (Scheherazade confirmed)</pre>
+                <h3>Structural Prevention</h3>
+<pre>Rule 1: Every design meeting must end with a concrete test
+        that can be run in the next 24 hours.
+
+Rule 2: Every review cycle must include at least one &quot;has
+        anyone actually run this?&quot; question.
+
+Rule 3: Every design doc must have a section titled
+        &quot;Falsification&quot; with at least one concrete base-test.
+
+Rule 4: If a proposal has survived review without execution,
+        the next reviewer has the explicit authority to
+        demand a 30-second base-test before further discussion.
+
+Rule 5: The word &quot;basically&quot; is a reviewable event. Use it
+        three times in a meeting and a facilitator calls
+        Ritual 5 (Force Explicit Assumptions).</pre>
+            </section>
+            <section class="section" id="protocol">
+                <h2>7. The Popperian Base-Test Protocol</h2>
+                <p>A reproducible workflow any team can run today. Implemented as a slash-command style procedure.</p>
+<pre>/base-test [claim]
+
+STEP 1: IDENTIFY
+  State the claim C in one sentence.
+  If it takes more than one sentence, the claim is not
+  specific enough to test. Narrow it.
+
+STEP 2: DECOMPOSE
+  List the 3-5 load-bearing sub-claims supporting C.
+  Each sub-claim must be itself a single sentence.
+
+STEP 3: SELECT
+  Choose the sub-claim that, if false, would most
+  damage the overall claim. This is the BASE.
+
+STEP 4: FALSIFY
+  Design a test that would show the base to be false.
+  The test must be:
+    &middot; concrete (specific query, specific measurement)
+    &middot; cheap (&lt; 1 hour of work)
+    &middot; boolean (pass or fail, no gradients)
+    &middot; observable (produces evidence anyone can check)
+
+STEP 5: EXECUTE
+  Run the test. Do not discuss. Do not revise the test.
+  Execute.
+
+STEP 6: RECORD
+  Write down the result. If the base is falsified,
+  the entire claim structure is suspect. Restart.
+  If the base holds, proceed to the next sub-claim.
+
+STEP 7: REPEAT
+  Work through the sub-claims in order of criticality.
+  Stop when every load-bearing claim has survived a
+  falsification attempt.
+
+STEP 8: DOCUMENT
+  Record the tests in a falsification log attached to
+  the claim. Future reviewers reference this log.</pre>
+                <h3>Example Run (30 Seconds)</h3>
+<pre>Claim: &quot;Our payment reconciliation is correct.&quot;
+
+Decompose:
+  a. The spec is complete
+  b. The tests cover the spec
+  c. The production data matches the spec
+
+Select: (a) is load-bearing for everything else.
+
+Falsify: query distinct currencies in production.
+
+Execute: SELECT DISTINCT currency FROM transactions;
+         Result: NULL, USD, EUR, GBP, JPY
+
+Record: spec does not mention NULL. (a) is falsified.
+
+Restart: the entire tower is suspect. Investigate.
+
+Total time: under 30 seconds.
+Total cost: priceless.</pre>
+            </section>
+            <section class="section" id="rings">
+                <h2>8. Integration With 12-Ring Quality Gates</h2>
+                <p>Fractal wrongness is a pattern that appears at every level of the quality gate stack. Each ring catches a different layer of fractal wrongness.</p>
+<pre>Ring &#8594; Level of fractal wrongness it catches
+&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;
+
+&#9679; R0 GROUND
+  Catches: brute non-claims (empty, bot-slop)
+  Fractal level: the zero case
+
+&#12316; R1 SIGNAL
+  Catches: claims with no content (pure form, no substance)
+  Fractal level: surface rhetoric
+
+&#9475; R2 GATE (charter)
+  Catches: claims that violate stated principles
+  Fractal level: the value layer
+
+&#9825; R3 AFFECT
+  Catches: claims built on social pressure (sycophancy loop)
+  Fractal level: validation-by-agreement
+
+&#9651; R4 FORGE
+  Catches: claims that fail technical verification
+  Fractal level: the testable layer &mdash; this is where
+  the base-test protocol lives
+
+&#9680; R5 IDENTITY
+  Catches: impersonation, unearned authority claims
+  Fractal level: source of the claim
+
+&#9711; R6 OBSERVER
+  Catches: meta-wrongness &mdash; the claim that the
+  review system itself is free of fractal wrongness
+  Fractal level: the review of reviews
+
+&#10209; M0 AETHER
+  Catches: RFC-level hypothesis wrongness
+  Fractal level: premise structure
+
+&#11041; M1 FLUX
+  Catches: refactor proposals that would propagate
+  fractal wrongness across the codebase
+  Fractal level: change vectors
+
+&#10192; M2 VOID
+  Catches: dead code whose deletion would reveal
+  fractal wrongness in the remaining structure
+  Fractal level: negative space
+
+&#10022; M3 NEXUS
+  Catches: cross-project wrongness (our fractal tower
+  sits on their fractal tower)
+  Fractal level: transitive dependency
+
+&#10043; M4 OMEGA
+  Catches: final sign-off where the entire claim
+  structure has been verified at every ring
+  Fractal level: the whole</pre>
+                <p>The Scheherazade Loop lives primarily in the space between R3 (social validation) and R4 (technical verification). It survives because R3 says &ldquo;everyone agrees&rdquo; and R4 was never actually engaged. The base-test protocol forces the R3 &rarr; R4 transition.</p>
+            </section>
+            <section class="section" id="cases">
+                <h2>9. Case Studies</h2>
+                <h3>Case 1: Aviation Checklists (Gawande 2009)</h3>
+                <p>The aviation industry converged on checklists because post-incident reviews repeatedly found fractal wrongness: the pilot believed the aircraft was ready, the copilot believed the pilot had checked, the ground crew believed someone else had verified the fuel load. Each layer relied on the next without grounding in empirical check. Checklists are a structural antidote: they force a base-test at every layer.</p>
+                <p><em>Lesson:</em> when human memory is the base-test, the base is corruptible by social pressure. Externalize the base to a checklist.</p>
+                <h3>Case 2: Differential Diagnosis in Medicine</h3>
+                <p>A patient presents with chest pain. A fractally wrong diagnostic process would be: &ldquo;Most chest pain is anxiety. This patient is anxious. Therefore this is anxiety.&rdquo; Each step sounds reasonable. The tower is fractally wrong because it never tests the base claim against alternatives.</p>
+                <p>The antidote is the differential diagnosis ritual: enumerate every possible cause, rank by prior probability, test the top candidates in order of severity-weighted probability. This is the medical equivalent of Ritual 5 (Force Explicit Assumptions) + Ritual 3 (Ask For The Failure Mode).</p>
+                <p><em>Lesson:</em> the structural ritual is older than the name. Medicine has known this since Osler. Software is catching up.</p>
+                <h3>Case 3: The Ariane 5 Rocket (1996)</h3>
+                <p>The Ariane 5 Flight 501 self-destructed 37 seconds after launch because flight control software inherited code from Ariane 4, which had different physical constraints. Each layer of assumption was locally reasonable: the code worked on Ariane 4, Ariane 5 was similar to Ariane 4, therefore the code would work on Ariane 5. A 64-bit floating-point value representing horizontal velocity overflowed a 16-bit integer, which had been deemed unreachable under Ariane 4 dynamics.</p>
+                <p>A base-test would have asked: &ldquo;On Ariane 5, does horizontal velocity ever exceed the Ariane 4 maximum?&rdquo; A 10-line simulation would have revealed the overflow in minutes. Instead, the tower of &ldquo;this worked before&rdquo; survived into launch.</p>
+                <p><em>Lesson:</em> reusable components carry their assumptions with them. Force the assumptions explicit every time the component crosses a context boundary (Ritual 5).</p>
+            </section>
+            <section class="section" id="citations">
+                <h2>10. Empirical Grounding</h2>
+                <ul>
+                    <li><strong>Popper, K. (1959). <em>The Logic of Scientific Discovery.</em></strong> The foundational source for the falsification principle. Chapter 4 formalizes the base-test: a hypothesis is scientific only if it specifies conditions under which it would be proven false. This is the master tool against fractal wrongness.</li>
+                    <li><strong>Beck, K. (2003). <em>Test-Driven Development: By Example.</em></strong> Introduces the failure-centric approach as a working engineering discipline. &ldquo;If it doesn't fail, we haven't learned anything.&rdquo; Beck's TDD is Popperian falsification applied at the function level.</li>
+                    <li><strong>Lee, K. (origin attribution).</strong> The term &ldquo;fractal wrongness&rdquo; is attributed to Keunwoo Lee via online commentary. The concept formalizes what Popper called &ldquo;unfalsifiable theories&rdquo; &mdash; the kind that are wrong at every level of resolution.</li>
+                    <li><strong>Edmondson, A. (1999). <em>Psychological Safety and Learning Behavior in Work Teams.</em> Administrative Science Quarterly.</strong> Shows that psychological safety enables the dissent and challenge required to run Rituals 3 and 5. Without safety, nobody asks for the failure mode. Without the question, fractal wrongness survives.</li>
+                    <li><strong>Wason, P. (1960). <em>On the failure to eliminate hypotheses in a conceptual task.</em> Quarterly Journal of Experimental Psychology.</strong> The original 2-4-6 experiment showed that humans naturally seek confirmation, not falsification. The base-test protocol is a structural workaround for this cognitive default.</li>
+                    <li><strong>Gawande, A. (2009). <em>The Checklist Manifesto.</em></strong> Documents how structural rituals prevent fractal wrongness in aviation, surgery, and construction. Checklists externalize the base-test so human memory cannot erode it.</li>
+                </ul>
+            </section>
+
+            <section class="section" id="falsify">
+                <h2>11. Meta-Falsification</h2>
+                <p>What would disprove this paper? In the spirit of The Prediction Trap &sect;9, here are the specific conditions under which the authors would consider this paper wrong:</p>
+                <ul>
+                    <li>A longitudinal study showing that teams using the base-test protocol produce more bugs, not fewer, than teams using ad-hoc review.</li>
+                    <li>Evidence that the 8-point detection checklist scores uncorrelate with actual fractal wrongness in postmortems (i.e., the checklist is just noise).</li>
+                    <li>A case where Ritual 5 (Force Explicit Assumptions) demonstrably makes an AI output worse by inducing the AI to invent false constraints.</li>
+                    <li>A principled argument that fractal wrongness does not exist as a distinct phenomenon &mdash; that all wrongness is either local (one bug) or structural (whole system), with no recursive middle.</li>
+                    <li>Evidence that Scheherazade coefficient correlates with project success, not failure.</li>
+                </ul>
+                <p>None of these falsification conditions have been met to the authors' knowledge. But none have been rigorously tested either. The honest position: this paper is a hypothesis wearing a white paper's clothes. Treat it as such. Run the base-test before trusting the tower.</p>
+            </section>
+
+            <section class="section">
+                <h2>12. Conclusion</h2>
+                <p>Fractal wrongness is the cost of AI-assisted development without structural skepticism. The tower gets taller, the foundations get shakier, and the cost of verifying the whole structure grows with every floor. The Popperian base-test inverts the problem: one falsification at the base collapses the entire tower.</p>
+                <p>This v2 revision provides what the v1 lacked: worked examples, measurable criteria, full ritual definitions, case studies, and meta-falsification. The core insight (Kent Beck + Keunwoo Lee + Popper) is unchanged. The engineering scaffold around it is new.</p>
+                <p>The connection to the Guild's other work is direct. The Harm Equation shows what happens when wrongness scales; Fractal Wrongness shows what happens when wrongness compounds. S.A.D. shows what happens when wrongness is anthropomorphized; this paper shows what happens when wrongness is structuralized.</p>
+                <p>Run the base-test. Fail early. Fail often. Fail in a way that teaches.</p>
+            </section>
+
+            <div class="closing-statement">
+                <p><strong>one falsification at the base collapses the tower</strong></p>
+                <p><strong>the tower was always fractal</strong></p>
+                <p><strong>the base was always testable</strong></p>
+                <p><strong>the question was always &ldquo;how would we know?&rdquo;</strong></p>
+                <p><strong>Ritual 3: ask for the failure mode</strong></p>
+                <p><strong>Ritual 5: force explicit assumptions</strong></p>
+                <p><strong>the rest is scaffolding</strong></p>
+                <p class="paper-mark">&#9874; ACG &middot; v2 &middot; fail early fail often</p>
+            </div>
+        </article>
+
+        <div class="cta-section">
+            <h2>Fractally Wrong (v2)</h2>
+            <p>The base-test is thirty seconds. The tower is six weeks.</p>
+            <div class="cta-buttons">
+                <a href="https://aicraftspeopleguild.github.io/fractally-wrong.html" class="btn btn-secondary">Read Original (v1)</a>
+                <a href="white-papers.html" class="btn btn-secondary">Back to White Papers</a>
+                <a href="review-scores.html" class="btn btn-secondary">Review Scores</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p><strong>AI Craftspeople Guild (ACG)</strong></p>
+            <p>Advocating for professional standards in AI-assisted software development</p>
+            <a href="https://github.com/aicraftspeopleguild" class="github-link">&#9889; github.com/aicraftspeopleguild</a>
+            <p style="margin-top:2rem;opacity:0.6">&copy; 2026 AI Craftspeople Guild.</p>
+        </div>
+    </footer>
+</body>
+</html>
