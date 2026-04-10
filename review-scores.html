@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Scores - AI Craftspeople Guild</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Work+Sans:wght@300;400;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="main.css">
+    <style>
+        .scores-table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 4px 10px var(--color-shadow); }
+        .scores-table thead { background: var(--color-graphite); }
+        .scores-table th { color: var(--color-parchment); font-weight: 600; padding: 1rem; text-align: left; font-size: 0.85rem; letter-spacing: 0.04em; text-transform: uppercase; }
+        .scores-table td { padding: 0.9rem 1rem; border-bottom: 1px solid rgba(166, 124, 82, 0.15); font-size: 0.95rem; }
+        .scores-table tbody tr:nth-child(even) { background: rgba(245, 241, 232, 0.5); }
+        .scores-table tbody tr:hover { background: var(--color-highlight); }
+        .score-cell { font-family: 'Courier Prime', monospace; font-weight: 700; text-align: right; }
+        .score-high { color: var(--color-rust); }
+        .score-mid { color: var(--color-bronze); }
+        .score-low { color: var(--color-graphite); }
+        .verdict { font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; }
+        .verdict.accept { color: var(--color-rust); }
+        .verdict.accept-star::before { content: "★ "; }
+        .verdict.revise { color: var(--color-graphite); font-style: italic; }
+        .rubric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+        .rubric-card { background: white; padding: 1.2rem; border-left: 4px solid var(--color-bronze); box-shadow: 0 2px 6px var(--color-shadow); }
+        .rubric-card .dim-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--color-rust); margin-bottom: 0.25rem; }
+        .rubric-card .dim-weight { font-family: 'Courier Prime', monospace; font-size: 1.3rem; font-weight: 700; color: var(--color-ink); }
+        .rubric-card .dim-desc { font-size: 0.85rem; color: var(--color-graphite); margin-top: 0.4rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="guild-mark"><div class="emblem">&#9874; ACG &#9874;</div></div>
+            <p class="eyebrow">Knowledge About Knowledge</p>
+            <h1>Review Scores</h1>
+            <p class="subtitle">All 21 ACG white papers graded against the Review Forge 7-dimension rubric</p>
+            <div class="article-meta">
+                <span>ACG Review Forge</span><span>7 Dimensions</span><span>21 Papers</span>
+                <span>3 REVISE</span><span>18 ACCEPT</span><span>April 2026</span>
+            </div>
+            <div class="back-link"><a href="white-papers.html">&larr; Back to White Papers</a></div>
+        </div>
+    </header>
+
+    <div class="container">
+        <article class="article-shell">
+            <div class="lead">
+                <p><strong>&ldquo;Make reviewing as rewarding as publishing.&rdquo;</strong> Every ACG paper scored against the 7-dimension rubric from <a href="https://aicraftspeopleguild.github.io/acg-peer-reviews.html">ACG Review Forge</a>. Acceptance requires weighted total &ge; 3.5 with no dimension below 2.0.</p>
+            </div>
+
+            <section class="section">
+                <h2>The Rubric</h2>
+                <div class="rubric-grid">
+                    <div class="rubric-card"><div class="dim-name">Accuracy</div><div class="dim-weight">20%</div><div class="dim-desc">Are claims factually correct?</div></div>
+                    <div class="rubric-card"><div class="dim-name">Evidence</div><div class="dim-weight">20%</div><div class="dim-desc">Are claims supported by evidence?</div></div>
+                    <div class="rubric-card"><div class="dim-name">Novelty</div><div class="dim-weight">15%</div><div class="dim-desc">Does this add something new?</div></div>
+                    <div class="rubric-card"><div class="dim-name">Reproducibility</div><div class="dim-weight">15%</div><div class="dim-desc">Can someone else do this?</div></div>
+                    <div class="rubric-card"><div class="dim-name">Clarity</div><div class="dim-weight">10%</div><div class="dim-desc">Is it understandable?</div></div>
+                    <div class="rubric-card"><div class="dim-name">Ethics</div><div class="dim-weight">10%</div><div class="dim-desc">Does it align with charter values?</div></div>
+                    <div class="rubric-card"><div class="dim-name">Practicality</div><div class="dim-weight">10%</div><div class="dim-desc">Can it be applied in the real world?</div></div>
+                </div>
+                <p>Each dimension scored 1-5. Weighted total calculated. Accept threshold: <strong>&ge; 3.5</strong>, with <strong>no dimension below 2.0</strong>.</p>
+            </section>
+            <section class="section">
+                <h2>Leaderboard</h2>
+                <div class="table-wrap">
+                    <table class="scores-table">
+                        <thead><tr><th>#</th><th>Paper</th><th>Type</th><th style="text-align:right">Score</th><th>Verdict</th></tr></thead>
+                        <tbody>
+                            <tr><td>1</td><td><a href="https://aicraftspeopleguild.github.io/the-harm-equation.html">The Harm Equation</a></td><td>White Paper</td><td class="score-cell score-high">4.75</td><td class="verdict accept accept-star">ACCEPT</td></tr>
+                            <tr><td>1</td><td><a href="https://aicraftspeopleguild.github.io/the-prediction-trap.html">The Prediction Trap</a></td><td>White Paper</td><td class="score-cell score-high">4.75</td><td class="verdict accept accept-star">ACCEPT</td></tr>
+                            <tr><td>1</td><td><a href="https://aicraftspeopleguild.github.io/sad.html">S.A.D.</a></td><td>Position Paper</td><td class="score-cell score-high">4.75</td><td class="verdict accept accept-star">ACCEPT</td></tr>
+                            <tr><td>4</td><td><a href="https://aicraftspeopleguild.github.io/konomi-standard.html">Konomi Standard</a></td><td>White Paper</td><td class="score-cell score-high">4.60</td><td class="verdict accept">ACCEPT</td></tr>
+                            <tr><td>5</td><td><a href="https://aicraftspeopleguild.github.io/the-pattern-that-wasnt-there.html">The Pattern That Wasn't There</a></td><td>Position Paper</td><td class="score-cell score-high">4.55</td><td class="verdict accept">ACCEPT</td></tr>
+                            <tr><td>6</td><td><a href="https://aicraftspeopleguild.github.io/ai-harness.html">AI Harness</a></td><td>White Paper</td><td class="score-cell score-high">4.45</td><td class="verdict accept">ACCEPT</td></tr>
+                            <tr><td>6</td><td><a href="https://aicraftspeopleguild.github.io/acg-peer-reviews.html">ACG Review Forge</a></td><td>Knowledge Paper</td><td class="score-cell score-high">4.45</td><td class="verdict accept">ACCEPT</td></tr>
+                            <tr><td>8</td><td><a href="https://aicraftspeopleguild.github.io/the-dog-the-data-scientist-and-the-mrna-vaccine.html">The Dog, the Data Scientist...</a></td><td>White Paper</td><td class="score-cell score-high">4.40</td><td class="verdict accept">ACCEPT</td></tr>
+                            <tr><td>9</td><td><a href="https://aicraftspeopleguild.github.io/shield-of-all-knights.html">Shield of All Knights</a></td><td>White Paper</td><td class="score-cell score-high">4.30</td><td class="verdict accept">ACCEPT</td></tr>
+                            <tr><td>9</td><td><a href="https://aicraftspeopleguild.github.io/from-correctness-to-integrity.html">From Correctness to Integrity</a></td><td>Knowledge Paper</td><td class="score-cell score-high">4.30</td><td class="verdict accept">ACCEPT</td></tr>
+                            <tr><td>9</td><td><a href="https://aicraftspeopleguild.github.io/lightning-factory.html">Lightning Factory</a></td><td>Experimental Paper</td><td class="score-cell score-high">4.30</td><td class="verdict accept">ACCEPT</td></tr>
+                            <tr><td>12</td><td><a href="decentralized-guild-web.html">ACG-NET: Decentralized Guild Web</a></td><td>White Paper</td><td class="score-cell score-mid">4.20</td><td class="verdict accept">ACCEPT</td></tr>
+                            <tr><td>13</td><td><a href="gerald.html">GERALD &middot; ACG &middot; ETH</a></td><td>Technical Spec</td><td class="score-cell score-mid">4.15</td><td class="verdict accept">ACCEPT</td></tr>
+                            <tr><td>14</td><td><a href="https://aicraftspeopleguild.github.io/youre-absolutely-wrong.html">You're Absolutely Wrong!</a></td><td>White Paper</td><td class="score-cell score-mid">4.10</td><td class="verdict accept">ACCEPT</td></tr>
+                            <tr><td>14</td><td><a href="https://aicraftspeopleguild.github.io/grid-brain.html">Grid Brain</a></td><td>Research Note</td><td class="score-cell score-mid">4.10</td><td class="verdict accept">ACCEPT</td></tr>
+                            <tr><td>16</td><td><a href="guild-chain.html">ACG-KCC: Guild Chain</a></td><td>White Paper</td><td class="score-cell score-mid">4.00</td><td class="verdict accept">ACCEPT</td></tr>
+                            <tr><td>17</td><td><a href="https://aicraftspeopleguild.github.io/question-reflection-action.html">Question Reflection Action</a></td><td>White Paper</td><td class="score-cell score-mid">3.95</td><td class="verdict accept">ACCEPT</td></tr>
+                            <tr><td>18</td><td><a href="https://aicraftspeopleguild.github.io/occams-razor.html">Occam's Razor</a></td><td>Knowledge Paper</td><td class="score-cell score-mid">3.70</td><td class="verdict accept">ACCEPT</td></tr>
+                            <tr><td>19</td><td><a href="fractally-wrong-v2.html">Fractally Wrong</a> &rarr; <strong>v2</strong></td><td>Position Paper</td><td class="score-cell score-low">3.25</td><td class="verdict revise">REVISE</td></tr>
+                            <tr><td>19</td><td><a href="irrational-universe-v2.html">Irrational Universe</a> &rarr; <strong>v2</strong></td><td>Experimental Paper</td><td class="score-cell score-low">3.20</td><td class="verdict revise">REVISE</td></tr>
+                            <tr><td>19</td><td><a href="rational-empire-v2.html">The Rational Empire</a> &rarr; <strong>v2</strong></td><td>Experimental Paper</td><td class="score-cell score-low">3.20</td><td class="verdict revise">REVISE</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>Summary</h2>
+                <p><strong>18/21 ACCEPT &middot; 3/21 REVISE.</strong> The three REVISE papers have been revised as v2 versions that address their rubric weaknesses — primarily Reproducibility and Practicality for an engineering guild. The top three papers (Harm Equation, Prediction Trap, S.A.D.) share exceptional evidence quality and genuine paradigm-shifting novelty.</p>
+                <p>The REVISE papers were not rejected for being wrong — they were asked for more engineering rigor. The v2 versions add worked examples, measurable criteria, computable experiments, and pre-registered study protocols while preserving the original poetic contributions.</p>
+            </section>
+
+            <div class="closing-statement">
+                <p><strong>reviewing is craft</strong></p>
+                <p><strong>the rubric is the scaffold</strong></p>
+                <p><strong>scores are honest or they are nothing</strong></p>
+                <p><strong>revision is love, not rejection</strong></p>
+                <p class="paper-mark">&#9874; ACG &middot; Review Forge &middot; 510,510</p>
+            </div>
+        </article>
+
+        <div class="cta-section">
+            <h2>Review Scores</h2>
+            <p>Every paper graded. Every score shown. Every revision documented.</p>
+            <div class="cta-buttons">
+                <a href="white-papers.html" class="btn btn-secondary">Back to White Papers</a>
+                <a href="https://aicraftspeopleguild.github.io/acg-peer-reviews.html" class="btn btn-secondary">Review Forge (Original)</a>
+                <a href="index.html" class="btn btn-secondary">Back to ACG-NET</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p><strong>AI Craftspeople Guild (ACG)</strong></p>
+            <p>Advocating for professional standards in AI-assisted software development</p>
+            <a href="https://github.com/aicraftspeopleguild" class="github-link">&#9889; github.com/aicraftspeopleguild</a>
+            <p style="margin-top:2rem;opacity:0.6">&copy; 2026 AI Craftspeople Guild.</p>
+        </div>
+    </footer>
+</body>
+</html>
