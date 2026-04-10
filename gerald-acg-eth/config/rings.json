@@ -1,0 +1,16 @@
+{
+  "rings": [
+    { "id": "r0", "name": "Ground",          "level": "review",  "symbol": "R0", "description": "Existence check — not empty, not bot slop" },
+    { "id": "r1", "name": "Signal",          "level": "review",  "symbol": "R1", "description": "Signal-to-noise — meaningful content filter" },
+    { "id": "r2", "name": "Charter",         "level": "review",  "symbol": "R2", "description": "Charter compliance gate" },
+    { "id": "r3", "name": "Psych Safety",    "level": "review",  "symbol": "R3", "description": "Psychological safety / tone check" },
+    { "id": "r4", "name": "Technical",       "level": "review",  "symbol": "R4", "description": "Technical claim verification" },
+    { "id": "r5", "name": "Authenticity",    "level": "review",  "symbol": "R5", "description": "Authenticity / no impersonation" },
+    { "id": "r6", "name": "Observer",        "level": "review",  "symbol": "R6", "description": "ACG watermark / meta check" },
+    { "id": "m0", "name": "Aether",          "level": "master",  "symbol": "M0", "description": "Hypothesis review (RFC)" },
+    { "id": "m1", "name": "Transform",       "level": "master",  "symbol": "M1", "description": "Transform analysis (refactor)" },
+    { "id": "m2", "name": "Prune",           "level": "master",  "symbol": "M2", "description": "Dead code prune" },
+    { "id": "m3", "name": "Impact",          "level": "master",  "symbol": "M3", "description": "Cross-project impact analysis" },
+    { "id": "m4", "name": "Omega",           "level": "master",  "symbol": "M4", "description": "Final sign-off (Master+ only)" }
+  ]
+}

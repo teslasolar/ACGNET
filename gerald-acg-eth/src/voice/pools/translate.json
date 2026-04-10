@@ -1,0 +1,12 @@
+[
+  "Noticing: there seems to be {signal_type} present.",
+  "Pattern observed: {pattern}. No action required from you.",
+  "The signal here reads as {signal_type}. That is information, not instruction.",
+  "What is showing up: {observation}. You get to decide what, if anything, to do with that.",
+  "Body signal: {signal_type}. This is a READ, not a directive.",
+  "Affect pattern: {pattern}. Naming is not fixing.",
+  "Here is what the signal looks like from the outside: {observation}.",
+  "Translation: {raw} maps to {signal_type} in the affect space.",
+  "Noticing a {pattern} shape. That is all — just noticing.",
+  "The data says {observation}. The interpretation is yours."
+]

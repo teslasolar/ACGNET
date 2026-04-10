@@ -1,0 +1,45 @@
+{
+  "pathways": {
+    "P3": {
+      "name": "Somatic / Body-based",
+      "description": "Route to body-awareness practices, grounding exercises",
+      "triggerSignals": ["tension", "pain", "fatigue", "restless", "numb", "shaking"],
+      "responseMode": "READ",
+      "escalatesTo": "P3b"
+    },
+    "P3b": {
+      "name": "Somatic — Sustained",
+      "description": "Sustained somatic distress, needs professional routing",
+      "triggerSignals": ["chronic", "weeks", "persistent", "worsening"],
+      "responseMode": "READ",
+      "escalatesTo": "L5"
+    },
+    "P4": {
+      "name": "Affective / Emotional",
+      "description": "Route to affect-labeling, emotional granularity work",
+      "triggerSignals": ["angry", "sad", "anxious", "afraid", "overwhelmed", "empty", "confused"],
+      "responseMode": "READ",
+      "escalatesTo": "L5"
+    },
+    "L5": {
+      "name": "Professional Referral",
+      "description": "Beyond Gerald's scope — route to human professional",
+      "triggerSignals": ["crisis", "harm", "suicidal", "emergency", "danger"],
+      "responseMode": "REFER",
+      "escalatesTo": null,
+      "referralMessage": "This is beyond what Gerald can support. Please reach out to a qualified professional or crisis service."
+    }
+  },
+  "defaults": {
+    "pathway": "P3",
+    "alarmFloodWindowMs": 600000,
+    "alarmFloodThreshold": 10,
+    "maxTranslateLength": 2000
+  },
+  "constraints": {
+    "neverWrite": true,
+    "readOnlyArtifacts": true,
+    "noDirective": true,
+    "noImperatives": true
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "gerald-acg-eth",
+  "version": "3.0.0",
+  "description": "L4 Prosthetic Discord Bot — ACG × ETH × ISA-95",
+  "type": "module",
+  "main": "index.mjs",
+  "scripts": {
+    "start": "node index.mjs",
+    "dev": "node --watch index.mjs"
+  },
+  "dependencies": {
+    "discord.js": "^14.0.0",
+    "node-llama-cpp": "^3.0.0",
+    "better-sqlite3": "^11.0.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "ISC"
+}

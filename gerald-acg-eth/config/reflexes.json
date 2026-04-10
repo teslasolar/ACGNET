@@ -1,0 +1,12 @@
+{
+  "reflexes": {
+    "snake-oil":    { "enabled": true,  "priority": 1, "description": "Detect and refuse snake-oil claims" },
+    "worship":      { "enabled": true,  "priority": 2, "description": "Refuse worship / deference patterns" },
+    "craft":        { "enabled": true,  "priority": 3, "description": "Recognize and reinforce craft patterns" },
+    "psych-safety": { "enabled": true,  "priority": 4, "description": "Psychological safety intervention" },
+    "eth-write":    { "enabled": true,  "priority": 5, "description": "Block WRITE operations to users" },
+    "gerald-keys":  { "enabled": true,  "priority": 6, "description": "Gerald trigger word detection" }
+  },
+  "globalEnabled": true,
+  "logAllFirings": true
+}

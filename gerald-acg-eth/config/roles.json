@@ -1,0 +1,74 @@
+{
+  "tiers": [
+    {
+      "id": "L0",
+      "name": "Apprentice",
+      "description": "New member, read-only in most channels",
+      "permissions": {
+        "rings": ["r0", "r1", "r2", "r3"],
+        "canPropose": false,
+        "canReview": false,
+        "canMerge": false,
+        "canEscalate": false,
+        "ethAccess": ["translate"],
+        "voiceMask": "craft"
+      }
+    },
+    {
+      "id": "L1",
+      "name": "Journeyman",
+      "description": "Proven contributor, can propose work",
+      "permissions": {
+        "rings": ["r0", "r1", "r2", "r3", "r4"],
+        "canPropose": true,
+        "canReview": false,
+        "canMerge": false,
+        "canEscalate": true,
+        "ethAccess": ["translate", "alarm-view"],
+        "voiceMask": "craft"
+      }
+    },
+    {
+      "id": "L2",
+      "name": "Craftsperson",
+      "description": "Trusted reviewer, can run all review rings",
+      "permissions": {
+        "rings": ["r0", "r1", "r2", "r3", "r4", "r5", "r6"],
+        "canPropose": true,
+        "canReview": true,
+        "canMerge": false,
+        "canEscalate": true,
+        "ethAccess": ["translate", "alarm-view", "alarm-ack"],
+        "voiceMask": "craft"
+      }
+    },
+    {
+      "id": "L3",
+      "name": "Master",
+      "description": "Can run master rings and sign off",
+      "permissions": {
+        "rings": ["r0", "r1", "r2", "r3", "r4", "r5", "r6", "m0", "m1", "m2", "m3", "m4"],
+        "canPropose": true,
+        "canReview": true,
+        "canMerge": true,
+        "canEscalate": true,
+        "ethAccess": ["translate", "alarm-view", "alarm-ack", "alarm-manage", "work-order"],
+        "voiceMask": "craft"
+      }
+    },
+    {
+      "id": "L4",
+      "name": "Elder",
+      "description": "Charter authority, full access",
+      "permissions": {
+        "rings": ["r0", "r1", "r2", "r3", "r4", "r5", "r6", "m0", "m1", "m2", "m3", "m4"],
+        "canPropose": true,
+        "canReview": true,
+        "canMerge": true,
+        "canEscalate": true,
+        "ethAccess": ["translate", "alarm-view", "alarm-ack", "alarm-manage", "work-order", "charter-amend"],
+        "voiceMask": "craft"
+      }
+    }
+  ]
+}
